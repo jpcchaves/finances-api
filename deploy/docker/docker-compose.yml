@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  database:
+    container_name: finances_db
+    image: postgres:15
+    env_file:
+      - .env
+    environment:
+      TZ: "America/Sao_Paulo"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: finances_db
+    ports:
+      - "5433:5432"
+    networks:
+      - finances-app-network
+    restart: always
+networks:
+  finances-app-network:
+    driver: bridge
