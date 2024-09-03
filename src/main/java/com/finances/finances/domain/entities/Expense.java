@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -65,4 +66,164 @@ public class Expense implements Serializable {
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date deletedAt;
+
+  public Expense() {}
+
+  public Expense(
+      Long id,
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      String notes,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      Date createdAt,
+      Date updatedAt,
+      Date deletedAt) {
+    this.id = id;
+    this.description = description;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.notes = notes;
+    this.user = user;
+    this.category = category;
+    this.supplier = supplier;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+  }
+
+  public Expense(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      String notes) {
+    this.description = description;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.user = user;
+    this.category = category;
+    this.supplier = supplier;
+    this.notes = notes;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public BigDecimal getAmount() {
+    return amount;
+  }
+
+  public void setAmount(BigDecimal amount) {
+    this.amount = amount;
+  }
+
+  public LocalDate getDueDate() {
+    return dueDate;
+  }
+
+  public void setDueDate(LocalDate dueDate) {
+    this.dueDate = dueDate;
+  }
+
+  public String getNotes() {
+    return notes;
+  }
+
+  public void setNotes(String notes) {
+    this.notes = notes;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public FinancialCategory getCategory() {
+    return category;
+  }
+
+  public void setCategory(FinancialCategory category) {
+    this.category = category;
+  }
+
+  public Supplier getSupplier() {
+    return supplier;
+  }
+
+  public void setSupplier(Supplier supplier) {
+    this.supplier = supplier;
+  }
+
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Date getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Date updatedAt) {
+    this.updatedAt = updatedAt;
+  }
+
+  public Date getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(Date deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Expense expense = (Expense) o;
+    return Objects.equals(id, expense.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
+  }
+
+  @Override
+  public String toString() {
+    return "Expense{"
+        + "id="
+        + id
+        + ", description='"
+        + description
+        + '\''
+        + ", amount="
+        + amount
+        + ", dueDate="
+        + dueDate
+        + '}';
+  }
 }
