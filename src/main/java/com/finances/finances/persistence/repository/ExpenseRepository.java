@@ -2,6 +2,7 @@ package com.finances.finances.persistence.repository;
 
 import com.finances.finances.domain.entities.Expense;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
   @Query(value = "SELECT * FROM expenses WHERE user_id = :userId", nativeQuery = true)
   List<Expense> findAll(Long userId);
+
+  @Query(
+      value = "SELECT * FROM expenses WHERE user_id = :userId AND id = :expenseId",
+      nativeQuery = true)
+  Optional<Expense> findById(Long userId, Long expenseId);
 }

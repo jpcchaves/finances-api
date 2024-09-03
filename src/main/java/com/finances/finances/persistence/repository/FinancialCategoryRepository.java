@@ -2,6 +2,7 @@ package com.finances.finances.persistence.repository;
 
 import com.finances.finances.domain.entities.FinancialCategory;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,10 @@ public interface FinancialCategoryRepository extends JpaRepository<FinancialCate
 
   @Query(value = "SELECT * FROM financial_categories WHERE user_id = :userId", nativeQuery = true)
   List<FinancialCategory> findAll(Long userId);
+
+  @Query(
+      value =
+          "SELECT * FROM financial_categories WHERE userId = :userId AND id = :financialCategoryId",
+      nativeQuery = true)
+  Optional<FinancialCategory> findById(Long userId, Long financialCategoryId);
 }
