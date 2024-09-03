@@ -146,4 +146,26 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     assertEquals(expenseToFind.getAmount(), foundExpense.getAmount());
     assertEquals(expenseToFind.getDueDate(), foundExpense.getDueDate());
   }
+
+  @DisplayName("Test given expense when save then return expense")
+  @Test
+  void save() {
+
+    String expenseDescription = faker.lorem().characters(20);
+    LocalDate dueDate = LocalDate.now().plusMonths(1);
+    String notes = faker.lorem().characters(20);
+
+    expense =
+        new Expense(
+            expenseDescription, BigDecimal.ZERO, dueDate, user, financialCategory, supplier, notes);
+
+    expense = expenseRepository.save(expense);
+
+    assertNotNull(expense);
+    assertTrue(expense.getId() > 0);
+    assertEquals(expenseDescription, expense.getDescription());
+    assertEquals(dueDate, expense.getDueDate());
+    assertEquals(notes, expense.getNotes());
+    assertEquals(BigDecimal.ZERO, expense.getAmount());
+  }
 }
