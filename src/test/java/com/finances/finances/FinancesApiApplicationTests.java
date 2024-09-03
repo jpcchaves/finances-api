@@ -1,13 +1,21 @@
 package com.finances.finances;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.finances.finances.config.AbstractTestContainerConfig;
+import com.finances.finances.persistence.repository.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FinancesApiApplicationTests {
+class FinancesApiApplicationTests extends AbstractTestContainerConfig {
 
-	@Test
-	void contextLoads() {
-	}
+  @Autowired private UserRepository userRepository;
 
+  @Test
+  void contextLoads() {
+
+    assertNotNull(userRepository);
+  }
 }
