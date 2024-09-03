@@ -168,4 +168,35 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     assertEquals(notes, expense.getNotes());
     assertEquals(BigDecimal.ZERO, expense.getAmount());
   }
+
+  @DisplayName("Test given expense when update then return updated expense")
+  @Test
+  void update() {
+
+    String UPDATED_DESCRIPTION = faker.lorem().characters(20);
+    LocalDate UPDATED_DUE_DATE = LocalDate.now().plusMonths(1).plusDays(2);
+    BigDecimal UPDATED_AMOUNT = BigDecimal.valueOf(200);
+
+    String expenseDescription = faker.lorem().characters(20);
+    LocalDate dueDate = LocalDate.now().plusMonths(1);
+    String notes = faker.lorem().characters(20);
+
+    expense =
+        new Expense(
+            expenseDescription, BigDecimal.ZERO, dueDate, user, financialCategory, supplier, notes);
+
+    expense = expenseRepository.save(expense);
+
+    expense.setDescription(UPDATED_DESCRIPTION);
+    expense.setDueDate(UPDATED_DUE_DATE);
+    expense.setAmount(UPDATED_AMOUNT);
+
+    Expense updatedExpense = expenseRepository.save(expense);
+
+    assertNotNull(updatedExpense);
+    assertEquals(updatedExpense.getId(), expense.getId());
+    assertEquals(UPDATED_DESCRIPTION, updatedExpense.getDescription());
+    assertEquals(UPDATED_DUE_DATE, updatedExpense.getDueDate());
+    assertEquals(UPDATED_AMOUNT, updatedExpense.getAmount());
+  }
 }
