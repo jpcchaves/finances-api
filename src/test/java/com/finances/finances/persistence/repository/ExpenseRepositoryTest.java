@@ -26,6 +26,9 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
 
   private static final Faker faker = new Faker();
 
+  private final Pageable pageable =
+      PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "created_at"));
+
   @Autowired private UserRepository userRepository;
   @Autowired private RoleRepository roleRepository;
   @Autowired private ExpenseRepository expenseRepository;
@@ -38,9 +41,6 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   private Expense expense;
   private Supplier supplier;
   private FinancialCategory financialCategory;
-
-  private Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "created_at"));
-  ;
 
   @BeforeEach
   void setupEach() {
