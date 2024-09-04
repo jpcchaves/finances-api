@@ -20,7 +20,7 @@ public interface FinancialCategoryRepository extends JpaRepository<FinancialCate
 
   @Query(
       value =
-          "SELECT * FROM financial_categories WHERE userId = :userId AND id = :financialCategoryId",
+          "SELECT * FROM financial_categories WHERE user_id = :userId AND id = :financialCategoryId",
       nativeQuery = true)
   Optional<FinancialCategory> findById(Long userId, Long financialCategoryId);
 }
