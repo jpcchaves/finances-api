@@ -33,6 +33,11 @@ public class FinancialCategory implements Serializable {
 
   public FinancialCategory() {}
 
+  public FinancialCategory(String name, User user) {
+    this.name = name;
+    this.user = user;
+  }
+
   public FinancialCategory(Long id, String name, User user) {
     this.id = id;
     this.name = name;

@@ -30,6 +30,11 @@ public class Supplier implements Serializable {
 
   public Supplier() {}
 
+  public Supplier(String name, User user) {
+    this.name = name;
+    this.user = user;
+  }
+
   public Supplier(Long id, String name, User user) {
     this.id = id;
     this.name = name;

@@ -19,8 +19,10 @@ class UserRepositoryTest extends AbstractTestContainerConfig {
   private static final Faker faker = new Faker();
   private static final String USER_EMAIL = faker.internet().emailAddress();
   private static final String USER_NAME = faker.name().name();
+
   @Autowired private UserRepository userRepository;
   @Autowired private RoleRepository roleRepository;
+
   private User user;
   private Role role;
 
