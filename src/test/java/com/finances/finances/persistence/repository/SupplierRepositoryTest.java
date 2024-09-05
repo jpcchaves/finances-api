@@ -122,4 +122,37 @@ class SupplierRepositoryTest extends AbstractTestContainerConfig {
     assertEquals(UPDATED_SUPPLIER_NAME, updatedSupplier.getName());
     assertEquals(savedSupplier.getUser(), updatedSupplier.getUser());
   }
+
+  @DisplayName(
+      "Test given supplier name when find supplier by name containing ignore case then return supplier")
+  @Test
+  void testFindByName() {
+
+    String SUPPLIER_NAME = faker.lorem().characters(20);
+    String SPLIT_SUPPLIER_NAME_TO_SAVE = SUPPLIER_NAME.substring(11, 19);
+    String SPLIT_SUPPLIER_NAME = SUPPLIER_NAME.substring(0, 10);
+
+    supplierRepository.save(new Supplier(SUPPLIER_NAME, user));
+
+    supplierRepository.save(new Supplier(SPLIT_SUPPLIER_NAME_TO_SAVE, user));
+
+    Supplier foundSupplier = supplierRepository.findByName(SPLIT_SUPPLIER_NAME).get();
+
+    assertNotNull(foundSupplier);
+    assertEquals(SUPPLIER_NAME, foundSupplier.getName());
+  }
+
+  @DisplayName(
+      "Test given supplier name when exists by name containing ignore case then return supplier")
+  @Test
+  void testExistsByName() {
+
+    String SUPPLIER_NAME = faker.lorem().characters(20);
+
+    supplierRepository.save(new Supplier(SUPPLIER_NAME, user));
+
+    boolean exists = supplierRepository.existsByName(SUPPLIER_NAME);
+
+    assertTrue(exists);
+  }
 }
