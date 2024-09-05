@@ -22,4 +22,16 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
       value = "SELECT * FROM suppliers WHERE user_id = :userId AND id = :supplierId",
       nativeQuery = true)
   Optional<Supplier> findById(Long userId, Long supplierId);
+
+  @Query(
+      value =
+          "SELECT * FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) LIMIT 1",
+      nativeQuery = true)
+  Optional<Supplier> findByName(String name);
+
+  @Query(
+      value =
+          "SELECT COUNT(*) > 0 FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name,'%'))",
+      nativeQuery = true)
+  boolean existsByName(String name);
 }
