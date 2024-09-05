@@ -3,7 +3,10 @@ package com.finances.finances.domain.entities;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(
@@ -28,6 +31,14 @@ public class Supplier implements Serializable {
       foreignKey = @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT))
   private User user;
 
+  @CreationTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime updatedAt;
+
   public Supplier() {}
 
   public Supplier(String name, User user) {
@@ -39,6 +50,15 @@ public class Supplier implements Serializable {
     this.id = id;
     this.name = name;
     this.user = user;
+  }
+
+  public Supplier(
+      Long id, String name, User user, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    this.id = id;
+    this.name = name;
+    this.user = user;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
   public Long getId() {
@@ -55,6 +75,22 @@ public class Supplier implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public User getUser() {

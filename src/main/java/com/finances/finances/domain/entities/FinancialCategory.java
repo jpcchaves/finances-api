@@ -3,7 +3,10 @@ package com.finances.finances.domain.entities;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(
@@ -23,6 +26,14 @@ public class FinancialCategory implements Serializable {
 
   @Column(unique = true, nullable = false, length = 100)
   private String name;
+
+  @CreationTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Temporal(TemporalType.TIMESTAMP)
+  private LocalDateTime updatedAt;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(
@@ -44,6 +55,15 @@ public class FinancialCategory implements Serializable {
     this.user = user;
   }
 
+  public FinancialCategory(
+      Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt, User user) {
+    this.id = id;
+    this.name = name;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.user = user;
+  }
+
   public Long getId() {
     return id;
   }
@@ -58,6 +78,22 @@ public class FinancialCategory implements Serializable {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   public User getUser() {
