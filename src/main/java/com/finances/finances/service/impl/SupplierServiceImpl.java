@@ -22,10 +22,13 @@ public class SupplierServiceImpl implements SupplierService {
 
   private final SupplierRepository supplierRepository;
   private final AuthHelper authHelper;
+  private final SupplierMapper supplierMapper;
 
-  public SupplierServiceImpl(SupplierRepository supplierRepository, AuthHelper authHelper) {
+  public SupplierServiceImpl(
+      SupplierRepository supplierRepository, AuthHelper authHelper, SupplierMapper supplierMapper) {
     this.supplierRepository = supplierRepository;
     this.authHelper = authHelper;
+    this.supplierMapper = supplierMapper;
   }
 
   @Override
@@ -70,7 +73,7 @@ public class SupplierServiceImpl implements SupplierService {
         supplierRepository.findAll(authHelper.getUserDetails().getId(), pageable);
 
     List<SupplierResponseDTO> expenseResponseDTOS =
-        SupplierMapper.toDTO(suppliersPage.getContent());
+        supplierMapper.toDTO(suppliersPage.getContent());
 
     PaginationResponseDTO<SupplierResponseDTO> paginationResponseDTO =
         new PaginationResponseDTO<SupplierResponseDTO>()
