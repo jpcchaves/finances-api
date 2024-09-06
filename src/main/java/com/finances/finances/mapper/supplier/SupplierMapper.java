@@ -19,4 +19,9 @@ public class SupplierMapper {
 
     return mapperUtil.mapObjects(suppliersList, SupplierResponseDTO.class);
   }
+
+  public SupplierResponseDTO toDTO(Supplier supplier) {
+
+    return mapperUtil.mapObject(supplier, SupplierResponseDTO.class);
+  }
 }
