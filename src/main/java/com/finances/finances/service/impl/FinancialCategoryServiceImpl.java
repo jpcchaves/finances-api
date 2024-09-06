@@ -6,6 +6,7 @@ import com.finances.finances.domain.dto.financialcategory.FinancialCategoryReque
 import com.finances.finances.domain.dto.financialcategory.FinancialCategoryResponseDTO;
 import com.finances.finances.domain.entities.FinancialCategory;
 import com.finances.finances.exception.BadRequestException;
+import com.finances.finances.exception.ResourceNotFoundException;
 import com.finances.finances.factory.financialcategory.FinancialCategoryFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.financialcategory.FinancialCategoryMapper;
@@ -52,7 +53,25 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
 
   @Override
   public ResponseDTO<?> update(Long financialCategoryId, FinancialCategoryRequestDTO requestDTO) {
-    return null;
+
+    FinancialCategory financialCategory =
+        financialCategoryRepository
+            .findById(financialCategoryId)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Categoria financeira não encontrada com o ID informado!"));
+
+    if (financialCategoryRepository.existsByName(requestDTO.getName())) {
+
+      throw new BadRequestException("Já existe uma categoria com o nome informado!");
+    }
+
+    financialCategory.setName(requestDTO.getName());
+
+    financialCategoryRepository.save(financialCategory);
+
+    return ResponseDTO.withMessage("Categoria financeira atualizada com sucesso!");
   }
 
   @Override
