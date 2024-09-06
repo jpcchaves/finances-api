@@ -25,4 +25,10 @@ public class ConcreteSupplierFactory implements SupplierFactory {
 
     return new Supplier(supplierId, name, user);
   }
+
+  @Override
+  public Supplier buildSupplier(String name, User user) {
+
+    return new Supplier(name, user);
+  }
 }

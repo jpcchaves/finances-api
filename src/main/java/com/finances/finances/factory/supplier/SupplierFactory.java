@@ -11,4 +11,6 @@ public interface SupplierFactory {
   SupplierResponseDTO buildSupplierResponseDTO(Long supplierId, String name);
 
   Supplier buildSupplier(Long supplierId, String name, User user);
+
+  Supplier buildSupplier(String name, User user);
 }
