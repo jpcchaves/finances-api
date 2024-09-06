@@ -41,6 +41,11 @@ public class SupplierServiceImpl implements SupplierService {
   @Transactional
   public ResponseDTO<?> create(SupplierRequestDTO requestDTO) {
 
+    if (supplierRepository.existsByName(requestDTO.getName())) {
+
+      throw new BadRequestException("Já existe um fornecedor com o nome informado!");
+    }
+
     Supplier supplier =
         supplierFactory.buildSupplier(requestDTO.getName(), authHelper.getUserDetails());
 
