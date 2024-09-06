@@ -85,7 +85,7 @@ public class SupplierServiceImpl implements SupplierService {
             .setTotalElements(suppliersPage.getTotalElements())
             .build();
 
-    return new ResponseDTO<>(paginationResponseDTO);
+    return ResponseDTO.withData(paginationResponseDTO);
   }
 
   @Override
@@ -97,9 +97,9 @@ public class SupplierServiceImpl implements SupplierService {
             .findById(supplierId)
             .orElseThrow(() -> new BadRequestException("Fornecedor não encontrado!"));
 
-    SupplierResponseDTO responseDTO = new SupplierResponseDTO(supplier.getId(), supplier.getName());
+    SupplierResponseDTO responseDTO = supplierMapper.toDTO(supplier);
 
-    return new ResponseDTO<>(responseDTO);
+    return ResponseDTO.withData(responseDTO);
   }
 
   @Override
