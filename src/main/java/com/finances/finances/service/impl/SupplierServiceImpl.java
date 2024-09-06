@@ -6,6 +6,7 @@ import com.finances.finances.domain.dto.supplier.SupplierRequestDTO;
 import com.finances.finances.domain.dto.supplier.SupplierResponseDTO;
 import com.finances.finances.domain.entities.Supplier;
 import com.finances.finances.exception.BadRequestException;
+import com.finances.finances.factory.supplier.SupplierFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.supplier.SupplierMapper;
 import com.finances.finances.persistence.repository.SupplierRepository;
@@ -23,19 +24,25 @@ public class SupplierServiceImpl implements SupplierService {
   private final SupplierRepository supplierRepository;
   private final AuthHelper authHelper;
   private final SupplierMapper supplierMapper;
+  private final SupplierFactory supplierFactory;
 
   public SupplierServiceImpl(
-      SupplierRepository supplierRepository, AuthHelper authHelper, SupplierMapper supplierMapper) {
+      SupplierRepository supplierRepository,
+      AuthHelper authHelper,
+      SupplierMapper supplierMapper,
+      SupplierFactory supplierFactory) {
     this.supplierRepository = supplierRepository;
     this.authHelper = authHelper;
     this.supplierMapper = supplierMapper;
+    this.supplierFactory = supplierFactory;
   }
 
   @Override
   @Transactional
   public ResponseDTO<?> create(SupplierRequestDTO requestDTO) {
 
-    Supplier supplier = new Supplier(requestDTO.getName(), authHelper.getUserDetails());
+    Supplier supplier =
+        supplierFactory.buildSupplier(requestDTO.getName(), authHelper.getUserDetails());
 
     supplierRepository.save(supplier);
 
