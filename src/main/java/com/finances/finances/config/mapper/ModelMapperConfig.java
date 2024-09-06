@@ -10,13 +10,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
 
+  private final SupplierConverters supplierConverters;
+
+  public ModelMapperConfig(SupplierConverters supplierConverters) {
+    this.supplierConverters = supplierConverters;
+  }
+
   @Bean
   public ModelMapper modelMapper() {
 
     ModelMapper modelMapper = new ModelMapper();
 
     modelMapper.addConverter(
-        SupplierConverters.supplierToResponseDTOConverter(),
+        supplierConverters.supplierToResponseDTOConverter(),
         Supplier.class,
         SupplierResponseDTO.class);
 
