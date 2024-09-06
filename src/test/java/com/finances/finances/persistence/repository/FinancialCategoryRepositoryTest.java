@@ -13,6 +13,8 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -128,5 +130,40 @@ class FinancialCategoryRepositoryTest extends AbstractTestContainerConfig {
 
     assertNotNull(savedFinancialCategory);
     assertEquals(UPDATED_FINANCIAL_CATEGORY_NAME, updatedFinancialCategory.getName());
+  }
+
+  @DisplayName(
+      "Test given financial category name when find financial category by name containing ignore case then return financial category")
+  @Test
+  void testFindByName() {
+
+    String FINANCIAL_CATEGORY_NAME = faker.lorem().characters(20);
+    String SPLIT_FINANCIAL_CATEGORY_NAME_TO_SAVE = FINANCIAL_CATEGORY_NAME.substring(11, 19);
+    String SPLIT_FINANCIAL_CATEGORY_NAME = FINANCIAL_CATEGORY_NAME.substring(0, 10);
+
+    financialCategoryRepository.save(new FinancialCategory(FINANCIAL_CATEGORY_NAME, user));
+
+    financialCategoryRepository.save(
+        new FinancialCategory(SPLIT_FINANCIAL_CATEGORY_NAME_TO_SAVE, user));
+
+    FinancialCategory foundFinancialCategory =
+        financialCategoryRepository.findByName(SPLIT_FINANCIAL_CATEGORY_NAME).get();
+
+    assertNotNull(foundFinancialCategory);
+    assertEquals(FINANCIAL_CATEGORY_NAME, foundFinancialCategory.getName());
+  }
+
+  @DisplayName(
+      "Test given financial category name when exists financial category by name containing ignore case then return financial category")
+  @Test
+  void testExistsByName() {
+
+    String FINANCIAL_CATEGORY_NAME = faker.lorem().characters(20);
+
+    financialCategoryRepository.save(new FinancialCategory(FINANCIAL_CATEGORY_NAME, user));
+
+    boolean exists = financialCategoryRepository.existsByName(FINANCIAL_CATEGORY_NAME);
+
+    assertTrue(exists);
   }
 }
