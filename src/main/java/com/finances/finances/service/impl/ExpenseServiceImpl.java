@@ -16,6 +16,7 @@ import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.persistence.repository.SupplierRepository;
 import com.finances.finances.service.ExpenseService;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,34 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository
             .findById(expenseId)
             .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
+
+    if (!Objects.equals(expense.getCategory().getName(), requestDTO.getCategory())) {
+
+      FinancialCategory financialCategory =
+          financialCategoryRepository
+              .findByName(requestDTO.getCategory())
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          String.format(
+                              "Categoria não encontrada com o nome informado: %s", requestDTO.getCategory())));
+
+      expense.setCategory(financialCategory);
+    }
+
+    if (!Objects.equals(expense.getSupplier().getName(), requestDTO.getSupplier())) {
+
+      Supplier supplier =
+          supplierRepository
+              .findByName(requestDTO.getSupplier())
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          String.format(
+                              "Fornecedor não encontrado com o nome informado %s", requestDTO.getSupplier())));
+
+      expense.setSupplier(supplier);
+    }
 
     expense.setDescription(requestDTO.getDescription());
     expense.setAmount(requestDTO.getAmount());
