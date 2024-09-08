@@ -12,6 +12,8 @@ import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.financialcategory.FinancialCategoryMapper;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.service.FinancialCategoryService;
+import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +45,7 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
     }
 
     FinancialCategory financialCategory =
-        financialCategoryFactory.buildFinancialCategory(
-            requestDTO.getName(), authHelper.getUserDetails());
+        financialCategoryFactory.buildFinancialCategory(requestDTO.getName(), authHelper.getUserDetails());
 
     financialCategory = financialCategoryRepository.save(financialCategory);
 
@@ -58,9 +59,7 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
         financialCategoryRepository
             .findById(financialCategoryId)
             .orElseThrow(
-                () ->
-                    new ResourceNotFoundException(
-                        "Categoria financeira não encontrada com o ID informado!"));
+                () -> new ResourceNotFoundException("Categoria financeira não encontrada com o ID informado!"));
 
     if (financialCategoryRepository.existsByName(requestDTO.getName())) {
 
@@ -76,7 +75,23 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
 
   @Override
   public ResponseDTO<PaginationResponseDTO<FinancialCategoryResponseDTO>> list(Pageable pageable) {
-    return null;
+
+    Page<FinancialCategory> financialCategoryPage = financialCategoryRepository.findAll(pageable);
+
+    List<FinancialCategoryResponseDTO> financialCategoryResponseDTOList =
+        financialCategoryMapper.toDTO(financialCategoryPage.getContent());
+
+    PaginationResponseDTO<FinancialCategoryResponseDTO> paginationResponseDTO =
+        new PaginationResponseDTO<FinancialCategoryResponseDTO>()
+            .builder()
+            .setContent(financialCategoryResponseDTOList)
+            .setPage(financialCategoryPage.getNumber())
+            .setSize(financialCategoryPage.getSize())
+            .setTotalPages(financialCategoryPage.getTotalPages())
+            .setTotalElements(financialCategoryPage.getTotalElements())
+            .build();
+
+    return ResponseDTO.withData(paginationResponseDTO);
   }
 
   @Override
