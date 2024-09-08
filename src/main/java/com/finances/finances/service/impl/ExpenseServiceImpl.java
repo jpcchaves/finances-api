@@ -77,7 +77,22 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ResponseDTO<?> update(Long expenseId, ExpenseRequestDTO requestDTO) {
-    return null;
+
+    Expense expense =
+        expenseRepository
+            .findById(expenseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
+
+    expense.setDescription(requestDTO.getDescription());
+    expense.setAmount(requestDTO.getAmount());
+    expense.setDueDate(requestDTO.getDueDate());
+    expense.setNotes(requestDTO.getNotes());
+
+    expense = expenseRepository.save(expense);
+
+    ExpenseResponseDTO expenseResponseDTO = expenseFactory.buildExpenseResponseDTO(expense);
+
+    return ResponseDTO.withData(expenseResponseDTO);
   }
 
   @Override
