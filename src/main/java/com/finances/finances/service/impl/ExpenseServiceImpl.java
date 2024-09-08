@@ -10,10 +10,13 @@ import com.finances.finances.domain.entities.Supplier;
 import com.finances.finances.exception.ResourceNotFoundException;
 import com.finances.finances.factory.expense.ExpenseFactory;
 import com.finances.finances.helper.auth.AuthHelper;
+import com.finances.finances.mapper.expense.ExpenseMapper;
 import com.finances.finances.persistence.repository.ExpenseRepository;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.persistence.repository.SupplierRepository;
 import com.finances.finances.service.ExpenseService;
+import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,18 +28,21 @@ public class ExpenseServiceImpl implements ExpenseService {
   private final SupplierRepository supplierRepository;
   private final AuthHelper authHelper;
   private final ExpenseFactory expenseFactory;
+  private final ExpenseMapper expenseMapper;
 
   public ExpenseServiceImpl(
       ExpenseRepository expenseRepository,
       FinancialCategoryRepository financialCategoryRepository,
       SupplierRepository supplierRepository,
       AuthHelper authHelper,
-      ExpenseFactory expenseFactory) {
+      ExpenseFactory expenseFactory,
+      ExpenseMapper expenseMapper) {
     this.expenseRepository = expenseRepository;
     this.financialCategoryRepository = financialCategoryRepository;
     this.supplierRepository = supplierRepository;
     this.authHelper = authHelper;
     this.expenseFactory = expenseFactory;
+    this.expenseMapper = expenseMapper;
   }
 
   @Override
@@ -97,7 +103,22 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ResponseDTO<PaginationResponseDTO<ExpenseResponseDTO>> list(Pageable pageable) {
-    return null;
+
+    Page<Expense> expensesPage = expenseRepository.findAll(pageable);
+
+    List<ExpenseResponseDTO> expenseResponseDTOList = expenseMapper.toDTO(expensesPage.getContent());
+
+    PaginationResponseDTO<ExpenseResponseDTO> paginationResponseDTO =
+        new PaginationResponseDTO<ExpenseResponseDTO>()
+            .builder()
+            .setContent(expenseResponseDTOList)
+            .setPage(expensesPage.getNumber())
+            .setSize(expensesPage.getSize())
+            .setTotalPages(expensesPage.getTotalPages())
+            .setTotalElements(expensesPage.getTotalElements())
+            .build();
+
+    return ResponseDTO.withData(paginationResponseDTO);
   }
 
   @Override
