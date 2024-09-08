@@ -23,4 +23,16 @@ public interface FinancialCategoryRepository extends JpaRepository<FinancialCate
           "SELECT * FROM financial_categories WHERE user_id = :userId AND id = :financialCategoryId",
       nativeQuery = true)
   Optional<FinancialCategory> findById(Long userId, Long financialCategoryId);
+
+  @Query(
+      value =
+          "SELECT * FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) LIMIT 1",
+      nativeQuery = true)
+  Optional<FinancialCategory> findByName(String name);
+
+  @Query(
+      value =
+          "SELECT COUNT(*) > 0 FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'))",
+      nativeQuery = true)
+  boolean existsByName(String name);
 }

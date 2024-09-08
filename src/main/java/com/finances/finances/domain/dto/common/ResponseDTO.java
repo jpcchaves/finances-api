@@ -31,6 +31,11 @@ public class ResponseDTO<T> implements Serializable {
     return new ResponseDTO<>(message);
   }
 
+  public static <T> ResponseDTO<T> withData(T data) {
+
+    return new ResponseDTO<>(data);
+  }
+
   public String getMessage() {
     return message;
   }

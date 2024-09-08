@@ -2,20 +2,26 @@ package com.finances.finances.mapper.supplier;
 
 import com.finances.finances.domain.dto.supplier.SupplierResponseDTO;
 import com.finances.finances.domain.entities.Supplier;
-import java.util.ArrayList;
+import com.finances.finances.util.mapper.MapperUtil;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SupplierMapper {
 
-  public static List<SupplierResponseDTO> toDTO(List<Supplier> expensesList) {
+  private final MapperUtil mapperUtil;
 
-    List<SupplierResponseDTO> expenseResponseDTOS = new ArrayList<>();
+  public SupplierMapper(MapperUtil mapperUtil) {
+    this.mapperUtil = mapperUtil;
+  }
 
-    for (Supplier expense : expensesList) {
+  public List<SupplierResponseDTO> toDTO(List<Supplier> suppliersList) {
 
-      expenseResponseDTOS.add(new SupplierResponseDTO(expense.getId(), expense.getName()));
-    }
+    return mapperUtil.mapObjects(suppliersList, SupplierResponseDTO.class);
+  }
 
-    return expenseResponseDTOS;
+  public SupplierResponseDTO toDTO(Supplier supplier) {
+
+    return mapperUtil.mapObject(supplier, SupplierResponseDTO.class);
   }
 }
