@@ -96,15 +96,19 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
 
   @Override
   public ResponseDTO<FinancialCategoryResponseDTO> findById(Long financialCategoryId) {
-    return null;
+
+    FinancialCategory financialCategory =
+        financialCategoryRepository
+            .findById(authHelper.getUserDetails().getId(), financialCategoryId)
+            .orElseThrow(() -> new ResourceNotFoundException("Categoria financeira não encontrada!"));
+
+    FinancialCategoryResponseDTO responseDTO = financialCategoryMapper.toDTO(financialCategory);
+
+    return ResponseDTO.withData(responseDTO);
   }
 
   @Override
   public ResponseDTO<?> delete(Long financialCategoryId) {
     return null;
-  }
-
-  public FinancialCategoryMapper getFinancialCategoryMapper() {
-    return financialCategoryMapper;
   }
 }
