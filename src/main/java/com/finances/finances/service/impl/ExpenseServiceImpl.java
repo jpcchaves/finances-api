@@ -123,7 +123,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ResponseDTO<ExpenseResponseDTO> findById(Long expenseId) {
-    return null;
+
+    Expense expense =
+        expenseRepository
+            .findById(expenseId)
+            .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
+
+    ExpenseResponseDTO responseDTO = expenseMapper.toDTO(expense);
+
+    return ResponseDTO.withData(responseDTO);
   }
 
   @Override
