@@ -19,4 +19,9 @@ public class ExpenseMapper {
 
     return mapperUtil.mapObjects(expenseList, ExpenseResponseDTO.class);
   }
+
+  public ExpenseResponseDTO toDTO(Expense expense) {
+
+    return mapperUtil.mapObject(expense, ExpenseResponseDTO.class);
+  }
 }
