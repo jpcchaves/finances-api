@@ -11,6 +11,7 @@ import com.finances.finances.factory.supplier.SupplierFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.supplier.SupplierMapper;
 import com.finances.finances.persistence.repository.SupplierRepository;
+import java.util.Optional;
 import java.util.Set;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,18 +25,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
 
-  @Mock private SupplierRepository supplierRepository;
-
-  @Mock private AuthHelper authHelper;
-
-  @Mock private SupplierMapper supplierMapper;
-
-  @Mock private SupplierFactory supplierFactory;
-
-  @InjectMocks private SupplierServiceImpl supplierService;
-
   private final Faker faker = new Faker();
-
+  @Mock private SupplierRepository supplierRepository;
+  @Mock private AuthHelper authHelper;
+  @Mock private SupplierMapper supplierMapper;
+  @Mock private SupplierFactory supplierFactory;
+  @InjectMocks private SupplierServiceImpl supplierService;
   private User user;
 
   private Supplier supplier;
@@ -56,7 +51,8 @@ class SupplierServiceImplTest {
     supplierRequestDTO = new SupplierRequestDTO(supplier.getName());
   }
 
-  @DisplayName("Test given supplier when create then return success message inside ResponseDTO object")
+  @DisplayName(
+      "Test given supplier when create then return success message inside ResponseDTO object")
   @Test
   void create() {
 
@@ -74,8 +70,22 @@ class SupplierServiceImplTest {
     assertEquals("Fornecedor cadastrado com sucesso!", responseDTO.getMessage());
   }
 
+  @DisplayName(
+      "Test given supplierId and SupplierRequestDTO when update then return success message")
   @Test
-  void update() {}
+  void update() {
+
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplier));
+
+    when(supplierRepository.findByName(supplier.getName())).thenReturn(Optional.empty());
+
+    when(supplierRepository.save(any(Supplier.class))).thenReturn(supplier);
+
+    ResponseDTO<?> responseDTO = supplierService.update(anyLong(), supplierRequestDTO);
+
+    assertNotNull(responseDTO);
+    assertEquals("Fornecedor atualizado com sucesso!", responseDTO.getMessage());
+  }
 
   @Test
   void list() {}
