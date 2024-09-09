@@ -3,14 +3,18 @@ package com.finances.finances.service.impl;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.finances.finances.domain.dto.common.PaginationResponseDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
 import com.finances.finances.domain.dto.supplier.SupplierRequestDTO;
+import com.finances.finances.domain.dto.supplier.SupplierResponseDTO;
 import com.finances.finances.domain.entities.Supplier;
 import com.finances.finances.domain.entities.User;
 import com.finances.finances.factory.supplier.SupplierFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.supplier.SupplierMapper;
 import com.finances.finances.persistence.repository.SupplierRepository;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.datafaker.Faker;
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 @ExtendWith(MockitoExtension.class)
 class SupplierServiceImplTest {
@@ -37,6 +42,14 @@ class SupplierServiceImplTest {
 
   private SupplierRequestDTO supplierRequestDTO;
 
+  private List<Supplier> supplierList;
+
+  private List<SupplierResponseDTO> supplierResponseDTOS = new ArrayList<>();
+
+  private Page<Supplier> supplierPage;
+
+  private Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
+
   @BeforeEach
   void setup() {
 
@@ -45,10 +58,32 @@ class SupplierServiceImplTest {
     String password = faker.number().digits(20);
 
     user = new User(name, email, password, Set.of());
+    user.setId(faker.random().nextLong());
 
     supplier = new Supplier(faker.lorem().characters(20), user);
 
     supplierRequestDTO = new SupplierRequestDTO(supplier.getName());
+
+    supplierList =
+        List.of(
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user),
+            new Supplier(faker.lorem().characters(20), user));
+
+    for (Supplier sup : supplierList) {
+
+      supplierResponseDTOS.add(new SupplierResponseDTO(faker.random().nextLong(), sup.getName()));
+    }
+
+    supplierPage = new PageImpl<>(supplierList, pageable, supplierList.size());
   }
 
   @DisplayName(
@@ -88,7 +123,20 @@ class SupplierServiceImplTest {
   }
 
   @Test
-  void list() {}
+  void list() {
+
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(supplierRepository.findAll(anyLong(), any(Pageable.class))).thenReturn(supplierPage);
+
+    when(supplierMapper.toDTO(supplierList)).thenReturn(supplierResponseDTOS);
+
+    ResponseDTO<PaginationResponseDTO<SupplierResponseDTO>> responseDTO =
+        supplierService.list(pageable);
+
+    assertNotNull(responseDTO);
+    assertEquals(supplierList.size(), responseDTO.getData().getTotalElements());
+  }
 
   @Test
   void findById() {}
