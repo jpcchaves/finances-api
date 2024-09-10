@@ -46,6 +46,8 @@ class SupplierServiceImplTest {
 
   private List<SupplierResponseDTO> supplierResponseDTOS = new ArrayList<>();
 
+  private SupplierResponseDTO supplierResponseDTO;
+
   private Page<Supplier> supplierPage;
 
   private Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
@@ -82,6 +84,8 @@ class SupplierServiceImplTest {
 
       supplierResponseDTOS.add(new SupplierResponseDTO(faker.random().nextLong(), sup.getName()));
     }
+
+    supplierResponseDTO = supplierResponseDTOS.get(0);
 
     supplierPage = new PageImpl<>(supplierList, pageable, supplierList.size());
   }
@@ -122,6 +126,7 @@ class SupplierServiceImplTest {
     assertEquals("Fornecedor atualizado com sucesso!", responseDTO.getMessage());
   }
 
+  @DisplayName("Test given pageable when list then return PaginationResponseDTO")
   @Test
   void list() {
 
@@ -138,6 +143,17 @@ class SupplierServiceImplTest {
     assertEquals(supplierList.size(), responseDTO.getData().getTotalElements());
   }
 
+  @DisplayName("Test given supplier id when find by id then return SupplierResponseDTO")
   @Test
-  void findById() {}
+  void findById() {
+
+    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplier));
+
+    when(supplierMapper.toDTO(supplier)).thenReturn(supplierResponseDTO);
+
+    ResponseDTO<SupplierResponseDTO> responseDTO = supplierService.findById(anyLong());
+
+    assertNotNull(responseDTO);
+    assertEquals(supplierResponseDTO.getName(), responseDTO.getData().getName());
+  }
 }
