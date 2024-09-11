@@ -169,6 +169,25 @@ class FinancialCategoryServiceImplTest {
     assertNotNull(responseDTO.getData());
   }
 
+  @DisplayName(
+      "Test given financialCategoryId when find by id then return FinancialCategoryResponseDTO")
   @Test
-  void findById() {}
+  void findById() {
+
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(financialCategoryRepository.findById(user.getId(), financialCategory.getId()))
+        .thenReturn(Optional.of(financialCategory));
+
+    when(financialCategoryMapper.toDTO(financialCategory)).thenReturn(financialCategoryResponseDTO);
+
+    ResponseDTO<FinancialCategoryResponseDTO> responseDTO =
+        financialCategoryService.findById(financialCategory.getId());
+
+    assertNotNull(responseDTO);
+    assertNull(responseDTO.getMessage());
+    assertNotNull(responseDTO.getData());
+    assertEquals(financialCategoryResponseDTO.getId(), responseDTO.getData().getId());
+    assertEquals(financialCategoryResponseDTO.getName(), responseDTO.getData().getName());
+  }
 }
