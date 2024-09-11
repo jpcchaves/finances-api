@@ -16,6 +16,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FinancialCategoryServiceImpl implements FinancialCategoryService {
@@ -37,6 +38,7 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> create(FinancialCategoryRequestDTO requestDTO) {
 
     if (financialCategoryRepository.existsByName(requestDTO.getName())) {
@@ -45,7 +47,8 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
     }
 
     FinancialCategory financialCategory =
-        financialCategoryFactory.buildFinancialCategory(requestDTO.getName(), authHelper.getUserDetails());
+        financialCategoryFactory.buildFinancialCategory(
+            requestDTO.getName(), authHelper.getUserDetails());
 
     financialCategory = financialCategoryRepository.save(financialCategory);
 
@@ -53,13 +56,16 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> update(Long financialCategoryId, FinancialCategoryRequestDTO requestDTO) {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
             .findById(financialCategoryId)
             .orElseThrow(
-                () -> new ResourceNotFoundException("Categoria financeira não encontrada com o ID informado!"));
+                () ->
+                    new ResourceNotFoundException(
+                        "Categoria financeira não encontrada com o ID informado!"));
 
     if (financialCategoryRepository.existsByName(requestDTO.getName())) {
 
@@ -74,6 +80,7 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<PaginationResponseDTO<FinancialCategoryResponseDTO>> list(Pageable pageable) {
 
     Page<FinancialCategory> financialCategoryPage = financialCategoryRepository.findAll(pageable);
@@ -95,12 +102,14 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<FinancialCategoryResponseDTO> findById(Long financialCategoryId) {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
             .findById(authHelper.getUserDetails().getId(), financialCategoryId)
-            .orElseThrow(() -> new ResourceNotFoundException("Categoria financeira não encontrada!"));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Categoria financeira não encontrada!"));
 
     FinancialCategoryResponseDTO responseDTO = financialCategoryMapper.toDTO(financialCategory);
 
