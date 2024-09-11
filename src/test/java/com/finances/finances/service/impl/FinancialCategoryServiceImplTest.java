@@ -149,8 +149,25 @@ class FinancialCategoryServiceImplTest {
     assertEquals("Categoria financeira atualizada com sucesso!", responseDTO.getMessage());
   }
 
+  @DisplayName(
+      "Test given pageable when list then return FinancialCategoryResponse pagination response")
   @Test
-  void list() {}
+  void list() {
+
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(financialCategoryRepository.findAll(user.getId(), pageable))
+        .thenReturn(financialCategoryPage);
+
+    when(financialCategoryMapper.toDTO(financialCategoryList))
+        .thenReturn(financialCategoryResponseDTOList);
+
+    ResponseDTO<?> responseDTO = financialCategoryService.list(pageable);
+
+    assertNotNull(responseDTO);
+    assertNull(responseDTO.getMessage());
+    assertNotNull(responseDTO.getData());
+  }
 
   @Test
   void findById() {}
