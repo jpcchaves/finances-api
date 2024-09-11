@@ -41,7 +41,8 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   @Transactional
   public ResponseDTO<?> create(FinancialCategoryRequestDTO requestDTO) {
 
-    if (financialCategoryRepository.existsByName(requestDTO.getName())) {
+    if (financialCategoryRepository.existsByName(
+        authHelper.getUserDetails().getId(), requestDTO.getName())) {
 
       throw new BadRequestException("Já existe uma categoria com o nome informado!");
     }
@@ -67,7 +68,8 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
                     new ResourceNotFoundException(
                         "Categoria financeira não encontrada com o ID informado!"));
 
-    if (financialCategoryRepository.existsByName(requestDTO.getName())) {
+    if (financialCategoryRepository.existsByName(
+        authHelper.getUserDetails().getId(), requestDTO.getName())) {
 
       throw new BadRequestException("Já existe uma categoria com o nome informado!");
     }

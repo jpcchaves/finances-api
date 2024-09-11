@@ -26,13 +26,13 @@ public interface FinancialCategoryRepository extends JpaRepository<FinancialCate
 
   @Query(
       value =
-          "SELECT * FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) LIMIT 1",
+          "SELECT * FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) AND user_id = :userId LIMIT 1",
       nativeQuery = true)
-  Optional<FinancialCategory> findByName(String name);
+  Optional<FinancialCategory> findByName(Long userId, String name);
 
   @Query(
       value =
-          "SELECT COUNT(*) > 0 FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%'))",
+          "SELECT COUNT(*) > 0 FROM financial_categories WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name, '%')) AND user_id = :userId",
       nativeQuery = true)
-  boolean existsByName(String name);
+  boolean existsByName(Long userId, String name);
 }

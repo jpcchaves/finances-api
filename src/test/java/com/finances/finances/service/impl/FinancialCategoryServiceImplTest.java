@@ -93,10 +93,10 @@ class FinancialCategoryServiceImplTest {
   @Test
   void create() {
 
-    when(financialCategoryRepository.existsByName(financialCategory.getName()))
-        .thenReturn(Boolean.FALSE);
-
     when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(financialCategoryRepository.existsByName(user.getId(), financialCategory.getName()))
+        .thenReturn(Boolean.FALSE);
 
     when(financialCategoryFactory.buildFinancialCategory(anyString(), any(User.class)))
         .thenReturn(financialCategory);
@@ -116,7 +116,9 @@ class FinancialCategoryServiceImplTest {
   @Test
   void createUnsuccessful() {
 
-    when(financialCategoryRepository.existsByName(financialCategory.getName()))
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(financialCategoryRepository.existsByName(user.getId(), financialCategory.getName()))
         .thenReturn(Boolean.TRUE);
 
     BadRequestException exception =
@@ -132,10 +134,13 @@ class FinancialCategoryServiceImplTest {
   @Test
   void update() {
 
+    when(authHelper.getUserDetails()).thenReturn(user);
+
     when(financialCategoryRepository.findById(anyLong()))
         .thenReturn(Optional.of(financialCategory));
 
-    when(financialCategoryRepository.existsByName(financialCategoryRequestDTO.getName()))
+    when(financialCategoryRepository.existsByName(
+            user.getId(), financialCategoryRequestDTO.getName()))
         .thenReturn(Boolean.FALSE);
 
     when(financialCategoryRepository.save(financialCategory)).thenReturn(financialCategory);

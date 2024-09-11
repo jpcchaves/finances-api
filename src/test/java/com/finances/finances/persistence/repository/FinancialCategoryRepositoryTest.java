@@ -13,8 +13,6 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -147,7 +145,7 @@ class FinancialCategoryRepositoryTest extends AbstractTestContainerConfig {
         new FinancialCategory(SPLIT_FINANCIAL_CATEGORY_NAME_TO_SAVE, user));
 
     FinancialCategory foundFinancialCategory =
-        financialCategoryRepository.findByName(SPLIT_FINANCIAL_CATEGORY_NAME).get();
+        financialCategoryRepository.findByName(user.getId(), SPLIT_FINANCIAL_CATEGORY_NAME).get();
 
     assertNotNull(foundFinancialCategory);
     assertEquals(FINANCIAL_CATEGORY_NAME, foundFinancialCategory.getName());
@@ -162,7 +160,8 @@ class FinancialCategoryRepositoryTest extends AbstractTestContainerConfig {
 
     financialCategoryRepository.save(new FinancialCategory(FINANCIAL_CATEGORY_NAME, user));
 
-    boolean exists = financialCategoryRepository.existsByName(FINANCIAL_CATEGORY_NAME);
+    boolean exists =
+        financialCategoryRepository.existsByName(user.getId(), FINANCIAL_CATEGORY_NAME);
 
     assertTrue(exists);
   }

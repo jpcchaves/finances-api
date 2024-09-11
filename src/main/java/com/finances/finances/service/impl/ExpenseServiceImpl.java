@@ -53,7 +53,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
-            .findByName(requestDTO.getCategory())
+            .findByName(authHelper.getUserDetails().getId(), requestDTO.getCategory())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
@@ -94,7 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     Expense expense =
         expenseRepository
-            .findById(expenseId)
+            .findById(authHelper.getUserDetails().getId(), expenseId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
 
@@ -102,7 +102,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
       FinancialCategory financialCategory =
           financialCategoryRepository
-              .findByName(requestDTO.getCategory())
+              .findByName(authHelper.getUserDetails().getId(), requestDTO.getCategory())
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(
@@ -144,7 +144,8 @@ public class ExpenseServiceImpl implements ExpenseService {
   @Transactional(readOnly = true)
   public ResponseDTO<PaginationResponseDTO<ExpenseResponseDTO>> list(Pageable pageable) {
 
-    Page<Expense> expensesPage = expenseRepository.findAll(pageable);
+    Page<Expense> expensesPage =
+        expenseRepository.findAll(authHelper.getUserDetails().getId(), pageable);
 
     List<ExpenseResponseDTO> expenseResponseDTOList =
         expenseMapper.toDTO(expensesPage.getContent());
@@ -168,7 +169,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     Expense expense =
         expenseRepository
-            .findById(expenseId)
+            .findById(authHelper.getUserDetails().getId(), expenseId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
 
