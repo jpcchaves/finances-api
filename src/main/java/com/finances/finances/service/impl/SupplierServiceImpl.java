@@ -41,7 +41,8 @@ public class SupplierServiceImpl implements SupplierService {
   @Transactional
   public ResponseDTO<?> create(SupplierRequestDTO requestDTO) {
 
-    if (supplierRepository.existsByName(requestDTO.getName())) {
+    if (supplierRepository.existsByName(
+        authHelper.getUserDetails().getId(), requestDTO.getName())) {
 
       throw new BadRequestException("Já existe um fornecedor com o nome informado!");
     }
@@ -60,10 +61,11 @@ public class SupplierServiceImpl implements SupplierService {
 
     Supplier supplier =
         supplierRepository
-            .findById(supplierId)
+            .findById(authHelper.getUserDetails().getId(), supplierId)
             .orElseThrow(() -> new BadRequestException("Fornecedor não encontrado!"));
 
-    Optional<Supplier> optionalSupplier = supplierRepository.findByName(requestDTO.getName());
+    Optional<Supplier> optionalSupplier =
+        supplierRepository.findByName(authHelper.getUserDetails().getId(), requestDTO.getName());
 
     if (optionalSupplier.isPresent()) {
 
@@ -106,7 +108,7 @@ public class SupplierServiceImpl implements SupplierService {
 
     Supplier supplier =
         supplierRepository
-            .findById(supplierId)
+            .findById(authHelper.getUserDetails().getId(), supplierId)
             .orElseThrow(() -> new BadRequestException("Fornecedor não encontrado!"));
 
     SupplierResponseDTO responseDTO = supplierMapper.toDTO(supplier);

@@ -63,7 +63,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     Supplier supplier =
         supplierRepository
-            .findByName(requestDTO.getSupplier())
+            .findByName(authHelper.getUserDetails().getId(), requestDTO.getSupplier())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
@@ -117,7 +117,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
       Supplier supplier =
           supplierRepository
-              .findByName(requestDTO.getSupplier())
+              .findByName(authHelper.getUserDetails().getId(), requestDTO.getSupplier())
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(

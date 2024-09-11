@@ -136,7 +136,7 @@ class SupplierRepositoryTest extends AbstractTestContainerConfig {
 
     supplierRepository.save(new Supplier(SPLIT_SUPPLIER_NAME_TO_SAVE, user));
 
-    Supplier foundSupplier = supplierRepository.findByName(SPLIT_SUPPLIER_NAME).get();
+    Supplier foundSupplier = supplierRepository.findByName(user.getId(), SPLIT_SUPPLIER_NAME).get();
 
     assertNotNull(foundSupplier);
     assertEquals(SUPPLIER_NAME, foundSupplier.getName());
@@ -151,7 +151,7 @@ class SupplierRepositoryTest extends AbstractTestContainerConfig {
 
     supplierRepository.save(new Supplier(SUPPLIER_NAME, user));
 
-    boolean exists = supplierRepository.existsByName(SUPPLIER_NAME);
+    boolean exists = supplierRepository.existsByName(user.getId(), SUPPLIER_NAME);
 
     assertTrue(exists);
   }
