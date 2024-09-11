@@ -8,6 +8,7 @@ import com.finances.finances.domain.dto.financialcategory.FinancialCategoryReque
 import com.finances.finances.domain.dto.financialcategory.FinancialCategoryResponseDTO;
 import com.finances.finances.domain.entities.FinancialCategory;
 import com.finances.finances.domain.entities.User;
+import com.finances.finances.exception.BadRequestException;
 import com.finances.finances.factory.financialcategory.FinancialCategoryFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.financialcategory.FinancialCategoryMapper;
@@ -106,6 +107,22 @@ class FinancialCategoryServiceImplTest {
     assertNotNull(responseDTO.getMessage());
     assertNull(responseDTO.getData());
     assertEquals("Categoria criada com sucesso!", responseDTO.getMessage());
+  }
+
+  @DisplayName(
+      "Test given financial category when try to create with duplicate name then return success message")
+  @Test
+  void createUnsuccessful() {
+
+    when(financialCategoryRepository.existsByName(financialCategory.getName()))
+        .thenReturn(Boolean.TRUE);
+
+    BadRequestException exception =
+        assertThrows(
+            BadRequestException.class,
+            () -> financialCategoryService.create(financialCategoryRequestDTO));
+
+    assertEquals("Já existe uma categoria com o nome informado!", exception.getMessage());
   }
 
   @Test
