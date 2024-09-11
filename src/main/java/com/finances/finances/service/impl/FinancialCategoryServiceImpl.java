@@ -83,7 +83,8 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   @Transactional(readOnly = true)
   public ResponseDTO<PaginationResponseDTO<FinancialCategoryResponseDTO>> list(Pageable pageable) {
 
-    Page<FinancialCategory> financialCategoryPage = financialCategoryRepository.findAll(pageable);
+    Page<FinancialCategory> financialCategoryPage =
+        financialCategoryRepository.findAll(authHelper.getUserDetails().getId(), pageable);
 
     List<FinancialCategoryResponseDTO> financialCategoryResponseDTOList =
         financialCategoryMapper.toDTO(financialCategoryPage.getContent());
