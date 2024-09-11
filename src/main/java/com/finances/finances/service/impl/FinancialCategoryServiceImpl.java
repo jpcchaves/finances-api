@@ -50,9 +50,9 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
         financialCategoryFactory.buildFinancialCategory(
             requestDTO.getName(), authHelper.getUserDetails());
 
-    financialCategory = financialCategoryRepository.save(financialCategory);
+    financialCategoryRepository.save(financialCategory);
 
-    return ResponseDTO.withData(financialCategoryMapper.toDTO(financialCategory));
+    return ResponseDTO.withMessage("Categoria criada com sucesso!");
   }
 
   @Override
