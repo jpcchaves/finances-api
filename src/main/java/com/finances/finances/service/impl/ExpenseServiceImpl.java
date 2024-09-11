@@ -20,6 +20,7 @@ import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -47,23 +48,28 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> create(ExpenseRequestDTO requestDTO) {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
-            .findByName(requestDTO.getCategory())
+            .findByName(authHelper.getUserDetails().getId(), requestDTO.getCategory())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
-                        String.format("Categoria não encontrada com o nome informado: %s", requestDTO.getCategory())));
+                        String.format(
+                            "Categoria não encontrada com o nome informado: %s",
+                            requestDTO.getCategory())));
 
     Supplier supplier =
         supplierRepository
-            .findByName(requestDTO.getSupplier())
+            .findByName(authHelper.getUserDetails().getId(), requestDTO.getSupplier())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
-                        String.format("Fornecedor não encontrado com o nome informado %s", requestDTO.getSupplier())));
+                        String.format(
+                            "Fornecedor não encontrado com o nome informado %s",
+                            requestDTO.getSupplier())));
 
     Expense expense =
         expenseFactory.buildExpense(
@@ -83,23 +89,26 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> update(Long expenseId, ExpenseRequestDTO requestDTO) {
 
     Expense expense =
         expenseRepository
-            .findById(expenseId)
-            .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
+            .findById(authHelper.getUserDetails().getId(), expenseId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
 
     if (!Objects.equals(expense.getCategory().getName(), requestDTO.getCategory())) {
 
       FinancialCategory financialCategory =
           financialCategoryRepository
-              .findByName(requestDTO.getCategory())
+              .findByName(authHelper.getUserDetails().getId(), requestDTO.getCategory())
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(
                           String.format(
-                              "Categoria não encontrada com o nome informado: %s", requestDTO.getCategory())));
+                              "Categoria não encontrada com o nome informado: %s",
+                              requestDTO.getCategory())));
 
       expense.setCategory(financialCategory);
     }
@@ -108,12 +117,13 @@ public class ExpenseServiceImpl implements ExpenseService {
 
       Supplier supplier =
           supplierRepository
-              .findByName(requestDTO.getSupplier())
+              .findByName(authHelper.getUserDetails().getId(), requestDTO.getSupplier())
               .orElseThrow(
                   () ->
                       new ResourceNotFoundException(
                           String.format(
-                              "Fornecedor não encontrado com o nome informado %s", requestDTO.getSupplier())));
+                              "Fornecedor não encontrado com o nome informado %s",
+                              requestDTO.getSupplier())));
 
       expense.setSupplier(supplier);
     }
@@ -131,11 +141,14 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<PaginationResponseDTO<ExpenseResponseDTO>> list(Pageable pageable) {
 
-    Page<Expense> expensesPage = expenseRepository.findAll(pageable);
+    Page<Expense> expensesPage =
+        expenseRepository.findAll(authHelper.getUserDetails().getId(), pageable);
 
-    List<ExpenseResponseDTO> expenseResponseDTOList = expenseMapper.toDTO(expensesPage.getContent());
+    List<ExpenseResponseDTO> expenseResponseDTOList =
+        expenseMapper.toDTO(expensesPage.getContent());
 
     PaginationResponseDTO<ExpenseResponseDTO> paginationResponseDTO =
         new PaginationResponseDTO<ExpenseResponseDTO>()
@@ -151,12 +164,14 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<ExpenseResponseDTO> findById(Long expenseId) {
 
     Expense expense =
         expenseRepository
-            .findById(expenseId)
-            .orElseThrow(() -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
+            .findById(authHelper.getUserDetails().getId(), expenseId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Despesa não encontrada com o ID informado!"));
 
     ExpenseResponseDTO responseDTO = expenseMapper.toDTO(expense);
 

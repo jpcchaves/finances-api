@@ -11,6 +11,7 @@ import java.util.Objects;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public UserResponseDTO update(Long userId, UserRequestDTO requestDTO) {
 
     if (!Objects.equals(requestDTO.getPassword(), requestDTO.getConfirmPassword())) {
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  @Transactional
   public User getUserByEmail(String email) {
     return userRepository
         .findByEmail(email)
@@ -61,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
   // Username refers to email
   @Override
+  @Transactional
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     return getUserByEmail(email);
   }

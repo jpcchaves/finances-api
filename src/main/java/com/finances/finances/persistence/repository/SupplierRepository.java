@@ -25,13 +25,13 @@ public interface SupplierRepository extends JpaRepository<Supplier, Long> {
 
   @Query(
       value =
-          "SELECT * FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) LIMIT 1",
+          "SELECT * FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name ,'%')) AND user_id = :userId LIMIT 1",
       nativeQuery = true)
-  Optional<Supplier> findByName(String name);
+  Optional<Supplier> findByName(Long userId, String name);
 
   @Query(
       value =
-          "SELECT COUNT(*) > 0 FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name,'%'))",
+          "SELECT COUNT(*) > 0 FROM suppliers WHERE LOWER(name) LIKE LOWER(CONCAT('%', :name,'%')) AND user_id = :userId",
       nativeQuery = true)
-  boolean existsByName(String name);
+  boolean existsByName(Long userId, String name);
 }

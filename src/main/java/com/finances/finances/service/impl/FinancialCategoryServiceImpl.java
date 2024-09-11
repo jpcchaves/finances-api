@@ -16,6 +16,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FinancialCategoryServiceImpl implements FinancialCategoryService {
@@ -37,31 +38,38 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> create(FinancialCategoryRequestDTO requestDTO) {
 
-    if (financialCategoryRepository.existsByName(requestDTO.getName())) {
+    if (financialCategoryRepository.existsByName(
+        authHelper.getUserDetails().getId(), requestDTO.getName())) {
 
       throw new BadRequestException("Já existe uma categoria com o nome informado!");
     }
 
     FinancialCategory financialCategory =
-        financialCategoryFactory.buildFinancialCategory(requestDTO.getName(), authHelper.getUserDetails());
+        financialCategoryFactory.buildFinancialCategory(
+            requestDTO.getName(), authHelper.getUserDetails());
 
-    financialCategory = financialCategoryRepository.save(financialCategory);
+    financialCategoryRepository.save(financialCategory);
 
-    return ResponseDTO.withData(financialCategoryMapper.toDTO(financialCategory));
+    return ResponseDTO.withMessage("Categoria criada com sucesso!");
   }
 
   @Override
+  @Transactional
   public ResponseDTO<?> update(Long financialCategoryId, FinancialCategoryRequestDTO requestDTO) {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
             .findById(financialCategoryId)
             .orElseThrow(
-                () -> new ResourceNotFoundException("Categoria financeira não encontrada com o ID informado!"));
+                () ->
+                    new ResourceNotFoundException(
+                        "Categoria financeira não encontrada com o ID informado!"));
 
-    if (financialCategoryRepository.existsByName(requestDTO.getName())) {
+    if (financialCategoryRepository.existsByName(
+        authHelper.getUserDetails().getId(), requestDTO.getName())) {
 
       throw new BadRequestException("Já existe uma categoria com o nome informado!");
     }
@@ -74,9 +82,11 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<PaginationResponseDTO<FinancialCategoryResponseDTO>> list(Pageable pageable) {
 
-    Page<FinancialCategory> financialCategoryPage = financialCategoryRepository.findAll(pageable);
+    Page<FinancialCategory> financialCategoryPage =
+        financialCategoryRepository.findAll(authHelper.getUserDetails().getId(), pageable);
 
     List<FinancialCategoryResponseDTO> financialCategoryResponseDTOList =
         financialCategoryMapper.toDTO(financialCategoryPage.getContent());
@@ -95,12 +105,14 @@ public class FinancialCategoryServiceImpl implements FinancialCategoryService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResponseDTO<FinancialCategoryResponseDTO> findById(Long financialCategoryId) {
 
     FinancialCategory financialCategory =
         financialCategoryRepository
             .findById(authHelper.getUserDetails().getId(), financialCategoryId)
-            .orElseThrow(() -> new ResourceNotFoundException("Categoria financeira não encontrada!"));
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Categoria financeira não encontrada!"));
 
     FinancialCategoryResponseDTO responseDTO = financialCategoryMapper.toDTO(financialCategory);
 

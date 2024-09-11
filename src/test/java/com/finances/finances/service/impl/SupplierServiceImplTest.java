@@ -63,6 +63,7 @@ class SupplierServiceImplTest {
     user.setId(faker.random().nextLong());
 
     supplier = new Supplier(faker.lorem().characters(20), user);
+    supplier.setId(faker.random().nextLong());
 
     supplierRequestDTO = new SupplierRequestDTO(supplier.getName());
 
@@ -95,13 +96,14 @@ class SupplierServiceImplTest {
   @Test
   void create() {
 
-    when(supplierRepository.existsByName(supplier.getName())).thenReturn(Boolean.FALSE);
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(supplierRepository.existsByName(user.getId(), supplier.getName()))
+        .thenReturn(Boolean.FALSE);
 
     when(supplierFactory.buildSupplier(supplier.getName(), user)).thenReturn(supplier);
 
     when(supplierRepository.save(supplier)).thenReturn(supplier);
-
-    when(authHelper.getUserDetails()).thenReturn(user);
 
     ResponseDTO<?> responseDTO = supplierService.create(supplierRequestDTO);
 
@@ -114,13 +116,16 @@ class SupplierServiceImplTest {
   @Test
   void update() {
 
-    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplier));
+    when(authHelper.getUserDetails()).thenReturn(user);
 
-    when(supplierRepository.findByName(supplier.getName())).thenReturn(Optional.empty());
+    when(supplierRepository.findById(anyLong(), anyLong())).thenReturn(Optional.of(supplier));
+
+    when(supplierRepository.findByName(user.getId(), supplier.getName()))
+        .thenReturn(Optional.empty());
 
     when(supplierRepository.save(any(Supplier.class))).thenReturn(supplier);
 
-    ResponseDTO<?> responseDTO = supplierService.update(anyLong(), supplierRequestDTO);
+    ResponseDTO<?> responseDTO = supplierService.update(supplier.getId(), supplierRequestDTO);
 
     assertNotNull(responseDTO);
     assertEquals("Fornecedor atualizado com sucesso!", responseDTO.getMessage());
@@ -147,11 +152,13 @@ class SupplierServiceImplTest {
   @Test
   void findById() {
 
-    when(supplierRepository.findById(anyLong())).thenReturn(Optional.of(supplier));
+    when(authHelper.getUserDetails()).thenReturn(user);
+
+    when(supplierRepository.findById(anyLong(), anyLong())).thenReturn(Optional.of(supplier));
 
     when(supplierMapper.toDTO(supplier)).thenReturn(supplierResponseDTO);
 
-    ResponseDTO<SupplierResponseDTO> responseDTO = supplierService.findById(anyLong());
+    ResponseDTO<SupplierResponseDTO> responseDTO = supplierService.findById(supplier.getId());
 
     assertNotNull(responseDTO);
     assertEquals(supplierResponseDTO.getName(), responseDTO.getData().getName());
