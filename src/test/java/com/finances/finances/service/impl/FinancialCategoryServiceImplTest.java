@@ -15,6 +15,7 @@ import com.finances.finances.mapper.financialcategory.FinancialCategoryMapper;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +69,7 @@ class FinancialCategoryServiceImplTest {
     user.setId(faker.random().nextLong());
 
     financialCategory = new FinancialCategory(faker.lorem().characters(20), user);
+    financialCategory.setId(faker.random().nextLong());
 
     financialCategoryRequestDTO = new FinancialCategoryRequestDTO(financialCategory.getName());
 
@@ -125,8 +127,27 @@ class FinancialCategoryServiceImplTest {
     assertEquals("Já existe uma categoria com o nome informado!", exception.getMessage());
   }
 
+  @DisplayName(
+      "Test given financialCategoryId and financial category request dto when update then return success message!")
   @Test
-  void update() {}
+  void update() {
+
+    when(financialCategoryRepository.findById(anyLong()))
+        .thenReturn(Optional.of(financialCategory));
+
+    when(financialCategoryRepository.existsByName(financialCategoryRequestDTO.getName()))
+        .thenReturn(Boolean.FALSE);
+
+    when(financialCategoryRepository.save(financialCategory)).thenReturn(financialCategory);
+
+    ResponseDTO<?> responseDTO =
+        financialCategoryService.update(financialCategory.getId(), financialCategoryRequestDTO);
+
+    assertNotNull(responseDTO);
+    assertNotNull(responseDTO.getMessage());
+    assertNull(responseDTO.getData());
+    assertEquals("Categoria financeira atualizada com sucesso!", responseDTO.getMessage());
+  }
 
   @Test
   void list() {}
