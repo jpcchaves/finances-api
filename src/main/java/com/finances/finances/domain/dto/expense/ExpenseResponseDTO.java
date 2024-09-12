@@ -1,11 +1,13 @@
 package com.finances.finances.domain.dto.expense;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExpenseResponseDTO implements Serializable {
 
   @Serial private static final long serialVersionUID = -7538269307671060249L;
