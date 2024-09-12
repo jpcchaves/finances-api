@@ -32,6 +32,7 @@ public class ConcreteExpenseFactory implements ExpenseFactory {
         expense.getId(),
         expense.getAmount(),
         expense.getDueDate(),
+        expense.getDescription(),
         expense.getNotes(),
         expense.getCategory().getName(),
         expense.getSupplier().getName());
