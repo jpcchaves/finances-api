@@ -34,4 +34,13 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       @Param("userId") Long userId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
+
+  @Query(
+      "SELECT new com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO(s.name, SUM(e.amount)) "
+          + "FROM Expense e JOIN e.supplier s WHERE e.user.id = :userId "
+          + "AND e.dueDate BETWEEN :startDate AND :endDate")
+  List<ExpenseGroupedByCategoryDTO> findTotalAmountBySupplier(
+      @Param("userId") Long userId,
+      @Param("startDate") LocalDate startDate,
+      @Param("endDate") LocalDate endDate);
 }
