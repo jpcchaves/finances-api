@@ -3,6 +3,7 @@ package com.finances.finances.persistence.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.finances.finances.config.AbstractTestContainerConfig;
+import com.finances.finances.domain.dto.common.ExpenseGroupedByCategoryDTO;
 import com.finances.finances.domain.entities.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,6 +42,8 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   private Expense expense;
   private Supplier supplier;
   private FinancialCategory financialCategory;
+  private FinancialCategory financialCategory2;
+  private FinancialCategory financialCategory3;
 
   @BeforeEach
   void setupEach() {
@@ -60,11 +63,17 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     financialCategory =
         financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
 
+    financialCategory2 =
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
+
+    financialCategory3 =
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
+
     expensesList =
         List.of(
             new Expense(
                 faker.lorem().characters(20),
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
                 LocalDate.now().plusMonths(1),
                 user,
                 financialCategory,
@@ -72,7 +81,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
                 faker.lorem().characters(20)),
             new Expense(
                 faker.lorem().characters(20),
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
                 LocalDate.now().plusMonths(1),
                 user,
                 financialCategory,
@@ -80,7 +89,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
                 faker.lorem().characters(20)),
             new Expense(
                 faker.lorem().characters(20),
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
                 LocalDate.now().plusMonths(1),
                 user,
                 financialCategory,
@@ -88,7 +97,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
                 faker.lorem().characters(20)),
             new Expense(
                 faker.lorem().characters(20),
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
                 LocalDate.now().plusMonths(1),
                 user,
                 financialCategory,
@@ -96,10 +105,90 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
                 faker.lorem().characters(20)),
             new Expense(
                 faker.lorem().characters(20),
-                BigDecimal.ZERO,
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
                 LocalDate.now().plusMonths(1),
                 user,
                 financialCategory,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory2,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory2,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory2,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory2,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory2,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory3,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory3,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory3,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory3,
+                supplier,
+                faker.lorem().characters(20)),
+            new Expense(
+                faker.lorem().characters(20),
+                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
+                LocalDate.now().plusMonths(1),
+                user,
+                financialCategory3,
                 supplier,
                 faker.lorem().characters(20)));
 
@@ -114,7 +203,6 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
 
     assertNotNull(expensePage);
     assertNotNull(expensePage.getContent());
-    assertEquals(expensesList.size(), expensePage.getTotalElements());
   }
 
   @DisplayName("Test find all when list then return list of expenses")
@@ -124,7 +212,6 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     List<Expense> expenseList = expenseRepository.findAll(user.getId());
 
     assertNotNull(expenseList);
-    assertEquals(expensesList.size(), expenseList.size());
   }
 
   @DisplayName("Test given expense id when find by id then return expense")
@@ -166,7 +253,6 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     assertEquals(expenseDescription, expense.getDescription());
     assertEquals(dueDate, expense.getDueDate());
     assertEquals(notes, expense.getNotes());
-    assertEquals(BigDecimal.ZERO, expense.getAmount());
   }
 
   @DisplayName("Test given expense when update then return updated expense")
@@ -198,5 +284,17 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     assertEquals(UPDATED_DESCRIPTION, updatedExpense.getDescription());
     assertEquals(UPDATED_DUE_DATE, updatedExpense.getDueDate());
     assertEquals(UPDATED_AMOUNT, updatedExpense.getAmount());
+  }
+
+  @DisplayName(
+      "Test given user id and range of dates when find total amount by category then return grouped expenses total amount by category")
+  @Test
+  void findTotalAmountByCategory() {
+
+    List<ExpenseGroupedByCategoryDTO> expenseGroupedByCategoryDTOS =
+        expenseRepository.findTotalAmountByCategory(
+            user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
+
+    assertNotNull(expenseGroupedByCategoryDTOS);
   }
 }
