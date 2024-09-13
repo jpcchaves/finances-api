@@ -39,7 +39,6 @@ CREATE TABLE public.expenses (
 );
 
 
-ALTER TABLE public.expenses OWNER TO postgres;
 
 --
 -- Name: financial_categories; Type: TABLE; Schema: public; Owner: postgres
@@ -54,7 +53,6 @@ CREATE TABLE public.financial_categories (
 );
 
 
-ALTER TABLE public.financial_categories OWNER TO postgres;
 
 --
 -- Name: roles; Type: TABLE; Schema: public; Owner: postgres
@@ -66,7 +64,6 @@ CREATE TABLE public.roles (
 );
 
 
-ALTER TABLE public.roles OWNER TO postgres;
 
 --
 -- Name: seq_expense; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -80,7 +77,6 @@ CREATE SEQUENCE public.seq_expense
     CACHE 1;
 
 
-ALTER TABLE public.seq_expense OWNER TO postgres;
 
 --
 -- Name: seq_financial_category; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -94,7 +90,6 @@ CREATE SEQUENCE public.seq_financial_category
     CACHE 1;
 
 
-ALTER TABLE public.seq_financial_category OWNER TO postgres;
 
 --
 -- Name: seq_role; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -108,7 +103,6 @@ CREATE SEQUENCE public.seq_role
     CACHE 1;
 
 
-ALTER TABLE public.seq_role OWNER TO postgres;
 
 --
 -- Name: seq_supplier; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -122,7 +116,6 @@ CREATE SEQUENCE public.seq_supplier
     CACHE 1;
 
 
-ALTER TABLE public.seq_supplier OWNER TO postgres;
 
 --
 -- Name: seq_user; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -135,8 +128,6 @@ CREATE SEQUENCE public.seq_user
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.seq_user OWNER TO postgres;
 
 --
 -- Name: suppliers; Type: TABLE; Schema: public; Owner: postgres
@@ -151,7 +142,6 @@ CREATE TABLE public.suppliers (
 );
 
 
-ALTER TABLE public.suppliers OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
@@ -167,7 +157,6 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: users_roles; Type: TABLE; Schema: public; Owner: postgres
@@ -179,7 +168,6 @@ CREATE TABLE public.users_roles (
 );
 
 
-ALTER TABLE public.users_roles OWNER TO postgres;
 
 --
 -- Data for Name: expenses; Type: TABLE DATA; Schema: public; Owner: postgres
