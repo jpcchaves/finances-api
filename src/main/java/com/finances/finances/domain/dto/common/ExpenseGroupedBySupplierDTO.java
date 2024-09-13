@@ -4,26 +4,26 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ExpenseGroupedByCategoryDTO implements Serializable {
+public class ExpenseGroupedBySupplierDTO implements Serializable {
 
   @Serial private static final long serialVersionUID = 7919650818221899088L;
 
-  private String category;
+  private String supplier;
   private BigDecimal amount;
 
-  public ExpenseGroupedByCategoryDTO() {}
+  public ExpenseGroupedBySupplierDTO() {}
 
-  public ExpenseGroupedByCategoryDTO(String category, BigDecimal amount) {
-    this.category = category;
+  public ExpenseGroupedBySupplierDTO(String supplier, BigDecimal amount) {
+    this.supplier = supplier;
     this.amount = amount;
   }
 
   public String getSupplier() {
-    return category;
+    return supplier;
   }
 
-  public void setSupplier(String category) {
-    this.category = category;
+  public void setSupplier(String supplier) {
+    this.supplier = supplier;
   }
 
   public BigDecimal getAmount() {
