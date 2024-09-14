@@ -8,6 +8,7 @@ import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.entities.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import net.datafaker.Faker;
@@ -39,9 +40,11 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
 
   private User user;
   private Role role;
-  private List<Expense> expensesList;
+  private List<Expense> expensesList = new ArrayList<>();
   private Expense expense;
   private Supplier supplier;
+  private Supplier supplier2;
+  private Supplier supplier3;
   private FinancialCategory financialCategory;
   private FinancialCategory financialCategory2;
   private FinancialCategory financialCategory3;
@@ -61,137 +64,39 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
 
     supplier = supplierRepository.save(new Supplier(faker.company().name(), user));
 
+    supplier2 = supplierRepository.save(new Supplier(faker.company().name(), user));
+
+    supplier3 = supplierRepository.save(new Supplier(faker.company().name(), user));
+
     financialCategory =
-        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
+        financialCategoryRepository.save(
+            new FinancialCategory(faker.commerce().department(), user));
 
     financialCategory2 =
-        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
+        financialCategoryRepository.save(
+            new FinancialCategory(faker.commerce().department(), user));
 
     financialCategory3 =
-        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(10), user));
+        financialCategoryRepository.save(
+            new FinancialCategory(faker.commerce().department(), user));
 
-    expensesList =
-        List.of(
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory2,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory2,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory2,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory2,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory2,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory3,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory3,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory3,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory3,
-                supplier,
-                faker.lorem().characters(20)),
-            new Expense(
-                faker.lorem().characters(20),
-                BigDecimal.valueOf(faker.number().randomDouble(2, 20, 300)),
-                LocalDate.now().plusMonths(1),
-                user,
-                financialCategory3,
-                supplier,
-                faker.lorem().characters(20)));
+    List<FinancialCategory> financialCategoriesList =
+        List.of(financialCategory, financialCategory2, financialCategory3);
+
+    List<Supplier> supplierList = List.of(supplier, supplier2, supplier3);
+
+    for (int i = 0; i < 300; i++) {
+
+      expensesList.add(
+          new Expense(
+              faker.lorem().characters(20),
+              BigDecimal.valueOf(faker.number().randomDouble(2, 20, 500)),
+              LocalDate.now().plusMonths(1),
+              user,
+              financialCategoriesList.get(faker.random().nextInt(0, 2)),
+              supplierList.get(faker.random().nextInt(0, 2)),
+              faker.lorem().characters(20)));
+    }
 
     expenseRepository.saveAll(expensesList);
   }
