@@ -1,11 +1,13 @@
 package com.finances.finances.domain.dto.expense;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExpenseResponseDTO implements Serializable {
 
   @Serial private static final long serialVersionUID = -7538269307671060249L;
@@ -15,6 +17,8 @@ public class ExpenseResponseDTO implements Serializable {
 
   @JsonFormat(pattern = "dd-MM-yyyy", timezone = "America/Sao_Paulo")
   private LocalDate dueDate;
+
+  private String description;
 
   private String notes;
   private String category;
@@ -32,6 +36,23 @@ public class ExpenseResponseDTO implements Serializable {
     this.id = id;
     this.amount = amount;
     this.dueDate = dueDate;
+    this.notes = notes;
+    this.category = category;
+    this.supplier = supplier;
+  }
+
+  public ExpenseResponseDTO(
+      Long id,
+      BigDecimal amount,
+      LocalDate dueDate,
+      String description,
+      String notes,
+      String category,
+      String supplier) {
+    this.id = id;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.description = description;
     this.notes = notes;
     this.category = category;
     this.supplier = supplier;
@@ -83,5 +104,13 @@ public class ExpenseResponseDTO implements Serializable {
 
   public void setSupplier(String supplier) {
     this.supplier = supplier;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }
