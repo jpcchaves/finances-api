@@ -313,11 +313,29 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     }
   }
 
+  @DisplayName(
+      "Test given user id and range of dates when find total amount by supplier then return grouped expenses total amount by supplier")
   @Test
   void findTotalAmountBySuppliers() {
 
-    List<ExpenseGroupedBySupplierDTO> expenseGroupedBySupplierDTOS =
+    List<Object[]> expenseGroupedBySupplier =
         expenseRepository.findTotalAmountBySupplier(
             user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
+
+    List<ExpenseGroupedBySupplierDTO> expenseGroupedBySupplierDTOs =
+        expenseGroupedBySupplier.stream()
+            .map(
+                exGrouped ->
+                    new ExpenseGroupedBySupplierDTO(
+                        (String) exGrouped[0], (BigDecimal) exGrouped[1]))
+            .toList();
+
+    assertNotNull(expenseGroupedBySupplierDTOs);
+
+    for (ExpenseGroupedBySupplierDTO expenseGroupedBySupplierDTO : expenseGroupedBySupplierDTOs) {
+
+      assertNotNull(expenseGroupedBySupplierDTO.getAmount());
+      assertNotNull(expenseGroupedBySupplierDTO.getSupplier());
+    }
   }
 }

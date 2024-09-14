@@ -1,6 +1,5 @@
 package com.finances.finances.persistence.repository;
 
-import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.entities.Expense;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,10 +35,10 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       @Param("endDate") LocalDate endDate);
 
   @Query(
-      "SELECT new com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO(s.name, SUM(e.amount)) "
+      "SELECT s.name, SUM(e.amount) "
           + "FROM Expense e JOIN e.supplier s WHERE e.user.id = :userId "
-          + "AND e.dueDate BETWEEN :startDate AND :endDate")
-  List<ExpenseGroupedBySupplierDTO> findTotalAmountBySupplier(
+          + "AND e.dueDate BETWEEN :startDate AND :endDate GROUP BY s.name")
+  List<Object[]> findTotalAmountBySupplier(
       @Param("userId") Long userId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
