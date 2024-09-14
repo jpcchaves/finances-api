@@ -18,11 +18,11 @@ public class ExpenseGroupedByCategoryDTO implements Serializable {
     this.amount = amount;
   }
 
-  public String getSupplier() {
+  public String getCategory() {
     return category;
   }
 
-  public void setSupplier(String category) {
+  public void setCategory(String category) {
     this.category = category;
   }
 
