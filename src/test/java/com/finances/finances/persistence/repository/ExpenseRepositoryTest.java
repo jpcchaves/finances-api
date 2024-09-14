@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.finances.finances.config.AbstractTestContainerConfig;
 import com.finances.finances.domain.dto.common.ExpenseGroupedByCategoryDTO;
+import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.entities.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -291,10 +292,32 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   @Test
   void findTotalAmountByCategory() {
 
-    List<ExpenseGroupedByCategoryDTO> expenseGroupedByCategoryDTOS =
+    List<Object[]> expenseGrouped =
         expenseRepository.findTotalAmountByCategory(
             user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
 
+    List<ExpenseGroupedByCategoryDTO> expenseGroupedByCategoryDTOS =
+        expenseGrouped.stream()
+            .map(
+                exGrouped ->
+                    new ExpenseGroupedByCategoryDTO(
+                        (String) exGrouped[0], (BigDecimal) exGrouped[1]))
+            .toList();
+
     assertNotNull(expenseGroupedByCategoryDTOS);
+
+    for (ExpenseGroupedByCategoryDTO expenseGroupedByCategoryDTO : expenseGroupedByCategoryDTOS) {
+
+      assertNotNull(expenseGroupedByCategoryDTO.getAmount());
+      assertNotNull(expenseGroupedByCategoryDTO.getCategory());
+    }
+  }
+
+  @Test
+  void findTotalAmountBySuppliers() {
+
+    List<ExpenseGroupedBySupplierDTO> expenseGroupedBySupplierDTOS =
+        expenseRepository.findTotalAmountBySupplier(
+            user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
   }
 }
