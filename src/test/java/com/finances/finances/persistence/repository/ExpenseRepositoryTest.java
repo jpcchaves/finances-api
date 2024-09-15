@@ -224,7 +224,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   void findTotalAmountBySuppliers() {
 
     List<Object[]> expenseGroupedBySupplier =
-        expenseRepository.findTotalAmountBySupplier(
+        expenseRepository.findTotalAmountByAllSuppliers(
             user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
 
     List<ExpenseGroupedBySupplierDTO> expenseGroupedBySupplierDTOs =
