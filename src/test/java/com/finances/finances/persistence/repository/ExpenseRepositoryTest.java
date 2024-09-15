@@ -69,16 +69,13 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     supplier3 = supplierRepository.save(new Supplier(faker.company().name(), user));
 
     financialCategory =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     financialCategory2 =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     financialCategory3 =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     List<FinancialCategory> financialCategoriesList =
         List.of(financialCategory, financialCategory2, financialCategory3);
@@ -242,5 +239,30 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
       assertNotNull(expenseGroupedBySupplierDTO.getAmount());
       assertNotNull(expenseGroupedBySupplierDTO.getSupplier());
     }
+  }
+
+  @DisplayName(
+      "Test given userId and financialCategoryId when find total amount by category then return expense grouped by category")
+  @Test
+  void findTotalAmountByCategoryId() {
+
+    List<Object[]> expenseGroupedByCategory =
+        expenseRepository.findTotalAmountByCategory(
+            user.getId(),
+            financialCategory.getId(),
+            LocalDate.now().minusMonths(3),
+            LocalDate.now().plusMonths(1));
+
+    Object[] result = expenseGroupedByCategory.get(0);
+
+    String categoryName = (String) result[0];
+    BigDecimal totalAmount = (BigDecimal) result[1];
+
+    ExpenseGroupedByCategoryDTO expenseGroupedByCategoryDTO =
+        new ExpenseGroupedByCategoryDTO(categoryName, totalAmount);
+
+    assertNotNull(expenseGroupedByCategoryDTO);
+    assertNotNull(expenseGroupedByCategoryDTO.getCategory());
+    assertNotNull(expenseGroupedByCategoryDTO.getAmount());
   }
 }
