@@ -29,7 +29,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
       "SELECT c.name, SUM(e.amount) "
           + "FROM Expense e JOIN e.category c WHERE e.user.id = :userId "
           + "AND e.dueDate BETWEEN :startDate AND :endDate GROUP BY c.name")
-  List<Object[]> findTotalAmountByCategory(
+  List<Object[]> findTotalAmountByAllCategories(
       @Param("userId") Long userId,
       @Param("startDate") LocalDate startDate,
       @Param("endDate") LocalDate endDate);
