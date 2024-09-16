@@ -69,16 +69,13 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     supplier3 = supplierRepository.save(new Supplier(faker.company().name(), user));
 
     financialCategory =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     financialCategory2 =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     financialCategory3 =
-        financialCategoryRepository.save(
-            new FinancialCategory(faker.commerce().department(), user));
+        financialCategoryRepository.save(new FinancialCategory(faker.lorem().characters(20), user));
 
     List<FinancialCategory> financialCategoriesList =
         List.of(financialCategory, financialCategory2, financialCategory3);
@@ -198,7 +195,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   void findTotalAmountByCategory() {
 
     List<Object[]> expenseGrouped =
-        expenseRepository.findTotalAmountByCategory(
+        expenseRepository.findTotalAmountByAllCategories(
             user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
 
     List<ExpenseGroupedByCategoryDTO> expenseGroupedByCategoryDTOS =
@@ -224,7 +221,7 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
   void findTotalAmountBySuppliers() {
 
     List<Object[]> expenseGroupedBySupplier =
-        expenseRepository.findTotalAmountBySupplier(
+        expenseRepository.findTotalAmountByAllSuppliers(
             user.getId(), LocalDate.now().minusMonths(3), LocalDate.now().plusMonths(1));
 
     List<ExpenseGroupedBySupplierDTO> expenseGroupedBySupplierDTOs =
@@ -242,5 +239,55 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
       assertNotNull(expenseGroupedBySupplierDTO.getAmount());
       assertNotNull(expenseGroupedBySupplierDTO.getSupplier());
     }
+  }
+
+  @DisplayName(
+      "Test given userId and financialCategoryId when find total amount by category then return expense grouped by category")
+  @Test
+  void findTotalAmountByCategoryId() {
+
+    List<Object[]> expenseGroupedByCategory =
+        expenseRepository.findTotalAmountByCategory(
+            user.getId(),
+            financialCategory.getId(),
+            LocalDate.now().minusMonths(3),
+            LocalDate.now().plusMonths(1));
+
+    Object[] result = expenseGroupedByCategory.get(0);
+
+    String categoryName = (String) result[0];
+    BigDecimal totalAmount = (BigDecimal) result[1];
+
+    ExpenseGroupedByCategoryDTO expenseGroupedByCategoryDTO =
+        new ExpenseGroupedByCategoryDTO(categoryName, totalAmount);
+
+    assertNotNull(expenseGroupedByCategoryDTO);
+    assertNotNull(expenseGroupedByCategoryDTO.getCategory());
+    assertNotNull(expenseGroupedByCategoryDTO.getAmount());
+  }
+
+  @DisplayName(
+      "Test given userId and supplierId when find total amount by supplier then return expense grouped by supplier")
+  @Test
+  void findTotalAmountBySupplier() {
+
+    List<Object[]> expenseGroupedBySupplier =
+        expenseRepository.findTotalAmountBySupplier(
+            user.getId(),
+            supplier.getId(),
+            LocalDate.now().minusMonths(3),
+            LocalDate.now().plusMonths(1));
+
+    Object[] result = expenseGroupedBySupplier.get(0);
+
+    String supplierName = (String) result[0];
+    BigDecimal totalAmount = (BigDecimal) result[1];
+
+    ExpenseGroupedBySupplierDTO expenseGroupedBySupplierDTO =
+        new ExpenseGroupedBySupplierDTO(supplierName, totalAmount);
+
+    assertNotNull(expenseGroupedBySupplierDTO);
+    assertNotNull(expenseGroupedBySupplierDTO.getSupplier());
+    assertNotNull(expenseGroupedBySupplierDTO.getAmount());
   }
 }
