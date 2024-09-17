@@ -16,8 +16,6 @@ services:
     networks:
       - finances-app-network
     restart: always
-    volumes:
-      - ./data:/var/lib/postgresql/data
 networks:
   finances-app-network:
     driver: bridge
