@@ -18,6 +18,7 @@ import com.finances.finances.persistence.repository.ExpenseRepository;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.persistence.repository.SupplierRepository;
 import com.finances.finances.service.ExpenseService;
+import com.finances.finances.util.StringUtilsHelper;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import java.io.IOException;
@@ -25,10 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -51,6 +49,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   private final AuthHelper authHelper;
   private final ExpenseFactory expenseFactory;
   private final ExpenseMapper expenseMapper;
+  private final StringUtilsHelper stringUtilsHelper;
 
   public ExpenseServiceImpl(
       ExpenseRepository expenseRepository,
@@ -58,13 +57,15 @@ public class ExpenseServiceImpl implements ExpenseService {
       SupplierRepository supplierRepository,
       AuthHelper authHelper,
       ExpenseFactory expenseFactory,
-      ExpenseMapper expenseMapper) {
+      ExpenseMapper expenseMapper,
+      StringUtilsHelper stringUtilsHelper) {
     this.expenseRepository = expenseRepository;
     this.financialCategoryRepository = financialCategoryRepository;
     this.supplierRepository = supplierRepository;
     this.authHelper = authHelper;
     this.expenseFactory = expenseFactory;
     this.expenseMapper = expenseMapper;
+    this.stringUtilsHelper = stringUtilsHelper;
   }
 
   @Override
@@ -209,6 +210,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     List<Expense> expenses = new ArrayList<>();
 
+    Set<Supplier> previousFetchedSuppliers = new HashSet<>();
+    Set<FinancialCategory> previousFetchedCategories = new HashSet<>();
+
     User user = authHelper.getUserDetails();
     Long userId = user.getId();
 
@@ -231,25 +235,60 @@ public class ExpenseServiceImpl implements ExpenseService {
         BigDecimal amount = new BigDecimal(expenseCsvDTO.getAmount().replaceAll(",", "."));
         LocalDate dueDate = expenseCsvDTO.getDueDate();
 
-        FinancialCategory financialCategory =
-            financialCategoryRepository
-                .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
-                .orElseThrow(
-                    () ->
-                        new ResourceNotFoundException(
-                            String.format(
-                                "Categoria não encontrada na linha: %s. Categoria: %s",
-                                lineNumber, expenseCsvDTO.getCategoryName())));
+        Optional<FinancialCategory> categoryExists =
+            previousFetchedCategories.stream()
+                .filter(
+                    (fc) ->
+                        stringUtilsHelper.containsIgnoreCase(
+                            fc.getName(), expenseCsvDTO.getCategoryName()))
+                .findFirst();
 
-        Supplier supplier =
-            supplierRepository
-                .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
-                .orElseThrow(
-                    () ->
-                        new ResourceNotFoundException(
-                            String.format(
-                                "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
-                                lineNumber, expenseCsvDTO.getSupplierName())));
+        Optional<Supplier> supplierExists =
+            previousFetchedSuppliers.stream()
+                .filter(
+                    sup ->
+                        stringUtilsHelper.containsIgnoreCase(
+                            sup.getName(), expenseCsvDTO.getSupplierName()))
+                .findFirst();
+
+        FinancialCategory financialCategory;
+        Supplier supplier;
+
+        if (categoryExists.isEmpty()) {
+
+          financialCategory =
+              financialCategoryRepository
+                  .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
+                  .orElseThrow(
+                      () ->
+                          new ResourceNotFoundException(
+                              String.format(
+                                  "Categoria não encontrada na linha: %s. Categoria: %s",
+                                  lineNumber, expenseCsvDTO.getCategoryName())));
+
+          previousFetchedCategories.add(financialCategory);
+        } else {
+
+          financialCategory = categoryExists.get();
+        }
+
+        if (supplierExists.isEmpty()) {
+
+          supplier =
+              supplierRepository
+                  .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
+                  .orElseThrow(
+                      () ->
+                          new ResourceNotFoundException(
+                              String.format(
+                                  "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
+                                  lineNumber, expenseCsvDTO.getSupplierName())));
+
+          previousFetchedSuppliers.add(supplier);
+        } else {
+
+          supplier = supplierExists.get();
+        }
 
         expenses.add(
             expenseFactory.buildExpense(
