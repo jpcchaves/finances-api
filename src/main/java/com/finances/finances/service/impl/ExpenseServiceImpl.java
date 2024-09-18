@@ -300,7 +300,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     } catch (IOException ex) {
 
-      logger.error("Ocorreu um erro interno ao processar o CSV de despesas");
+      logger.error(
+          "Error processing CSV file {}. Error: {}",
+          csvFile.getOriginalFilename(),
+          ex.getMessage());
 
       logger.error(Arrays.toString(ex.getStackTrace()));
 
