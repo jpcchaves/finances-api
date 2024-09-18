@@ -2,11 +2,14 @@ package com.finances.finances.service.impl;
 
 import com.finances.finances.domain.dto.common.PaginationResponseDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
+import com.finances.finances.domain.dto.expense.ExpenseCsvDTO;
 import com.finances.finances.domain.dto.expense.ExpenseRequestDTO;
 import com.finances.finances.domain.dto.expense.ExpenseResponseDTO;
 import com.finances.finances.domain.entities.Expense;
 import com.finances.finances.domain.entities.FinancialCategory;
 import com.finances.finances.domain.entities.Supplier;
+import com.finances.finances.domain.entities.User;
+import com.finances.finances.exception.BadRequestException;
 import com.finances.finances.exception.ResourceNotFoundException;
 import com.finances.finances.factory.expense.ExpenseFactory;
 import com.finances.finances.helper.auth.AuthHelper;
@@ -15,15 +18,32 @@ import com.finances.finances.persistence.repository.ExpenseRepository;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.persistence.repository.SupplierRepository;
 import com.finances.finances.service.ExpenseService;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExpenseServiceImpl.class);
 
   private final ExpenseRepository expenseRepository;
   private final FinancialCategoryRepository financialCategoryRepository;
@@ -181,5 +201,99 @@ public class ExpenseServiceImpl implements ExpenseService {
   @Override
   public ResponseDTO<?> delete(Long expenseId) {
     return null;
+  }
+
+  @Transactional
+  @Override
+  public ResponseDTO<?> processCSV(MultipartFile csvFile) {
+
+    List<Expense> expenses = new ArrayList<>();
+
+    User user = authHelper.getUserDetails();
+    Long userId = user.getId();
+
+    try (InputStreamReader reader = new InputStreamReader(csvFile.getInputStream())) {
+
+      CsvToBean<ExpenseCsvDTO> csvDTOS =
+          new CsvToBeanBuilder<ExpenseCsvDTO>(reader)
+              .withType(ExpenseCsvDTO.class)
+              .withIgnoreLeadingWhiteSpace(true)
+              .build();
+
+      List<ExpenseCsvDTO> expenseCsvDTOList = csvDTOS.parse();
+
+      for (int i = 0; i < expenseCsvDTOList.size(); i++) {
+
+        ExpenseCsvDTO expenseCsvDTO = expenseCsvDTOList.get(i);
+
+        int lineNumber = i + 2;
+
+        BigDecimal amount = new BigDecimal(expenseCsvDTO.getAmount().replaceAll(",", "."));
+        LocalDate dueDate = expenseCsvDTO.getDueDate();
+
+        FinancialCategory financialCategory =
+            financialCategoryRepository
+                .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
+                .orElseThrow(
+                    () ->
+                        new ResourceNotFoundException(
+                            String.format(
+                                "Categoria não encontrada na linha: %s. Categoria: %s",
+                                lineNumber, expenseCsvDTO.getCategoryName())));
+
+        Supplier supplier =
+            supplierRepository
+                .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
+                .orElseThrow(
+                    () ->
+                        new ResourceNotFoundException(
+                            String.format(
+                                "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
+                                lineNumber, expenseCsvDTO.getSupplierName())));
+
+        expenses.add(
+            expenseFactory.buildExpense(
+                expenseCsvDTO.getDescription(),
+                amount,
+                dueDate,
+                user,
+                financialCategory,
+                supplier,
+                expenseCsvDTO.getNotes()));
+      }
+
+    } catch (IOException ex) {
+
+      logger.error("Ocorreu um erro interno ao processar o CSV de despesas");
+
+      logger.error(Arrays.toString(ex.getStackTrace()));
+
+      throw new BadRequestException("Ocorreu um erro processando o csv.");
+    }
+
+    expenseRepository.saveAll(expenses);
+
+    return ResponseDTO.withMessage(
+        "Arquivo processado com sucesso! Total de despesas processadas: " + expenses.size());
+  }
+
+  @Override
+  public byte[] getExampleCsv() {
+
+    Resource resource = new ClassPathResource("templates/expenses-csv/exemplo.csv");
+
+    InputStream inputStream = null;
+
+    try {
+
+      inputStream = resource.getInputStream();
+
+      byte[] csvBytes = StreamUtils.copyToByteArray(inputStream);
+
+      return csvBytes;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

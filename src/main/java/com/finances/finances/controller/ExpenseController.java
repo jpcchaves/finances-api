@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Expense Controller")
 @SecurityRequirement(name = "Bearer Authentication")
@@ -77,4 +79,7 @@ public interface ExpenseController {
         @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
       })
   ResponseEntity<ResponseDTO<ExpenseResponseDTO>> findById(Long expenseId);
+
+  ResponseEntity<ResponseDTO<?>> uploadExpensesCsv(
+      @ModelAttribute("csvFile") MultipartFile csvFile);
 }
