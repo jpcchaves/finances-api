@@ -21,6 +21,7 @@ import com.finances.finances.service.ExpenseService;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,10 +31,13 @@ import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -224,7 +228,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
         int lineNumber = i + 2;
 
-        BigDecimal amount = new BigDecimal(expenseCsvDTO.getAmount());
+        BigDecimal amount = new BigDecimal(expenseCsvDTO.getAmount().replaceAll(",", "."));
         LocalDate dueDate = expenseCsvDTO.getDueDate();
 
         FinancialCategory financialCategory =
@@ -271,5 +275,25 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     return ResponseDTO.withMessage(
         "Arquivo processado com sucesso! Total de despesas processadas: " + expenses.size());
+  }
+
+  @Override
+  public byte[] getExampleCsv() {
+
+    Resource resource = new ClassPathResource("templates/expenses-csv/exemplo.csv");
+
+    InputStream inputStream = null;
+
+    try {
+
+      inputStream = resource.getInputStream();
+
+      byte[] csvBytes = StreamUtils.copyToByteArray(inputStream);
+
+      return csvBytes;
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

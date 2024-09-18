@@ -20,4 +20,6 @@ public interface ExpenseService {
   ResponseDTO<?> delete(Long expenseId);
 
   ResponseDTO<?> processCSV(MultipartFile csvFile);
+
+  byte[] getExampleCsv();
 }
