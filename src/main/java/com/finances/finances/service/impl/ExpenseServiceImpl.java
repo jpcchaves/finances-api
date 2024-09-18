@@ -2,6 +2,7 @@ package com.finances.finances.service.impl;
 
 import com.finances.finances.domain.dto.common.PaginationResponseDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
+import com.finances.finances.domain.dto.expense.ExpenseCsvDTO;
 import com.finances.finances.domain.dto.expense.ExpenseRequestDTO;
 import com.finances.finances.domain.dto.expense.ExpenseResponseDTO;
 import com.finances.finances.domain.entities.Expense;
@@ -17,12 +18,14 @@ import com.finances.finances.persistence.repository.ExpenseRepository;
 import com.finances.finances.persistence.repository.FinancialCategoryRepository;
 import com.finances.finances.persistence.repository.SupplierRepository;
 import com.finances.finances.service.ExpenseService;
-import java.io.BufferedReader;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.slf4j.Logger;
@@ -196,94 +199,70 @@ public class ExpenseServiceImpl implements ExpenseService {
     return null;
   }
 
+  @Transactional
   @Override
   public ResponseDTO<?> processCSV(MultipartFile csvFile) {
-
-    DateTimeFormatter dateInputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    DateTimeFormatter dbDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     List<Expense> expenses = new ArrayList<>();
 
     User user = authHelper.getUserDetails();
     Long userId = user.getId();
 
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(csvFile.getInputStream()))) {
+    try (InputStreamReader reader = new InputStreamReader(csvFile.getInputStream())) {
 
-      String line;
-      int lineNumber = 0;
+      CsvToBean<ExpenseCsvDTO> csvDTOS =
+          new CsvToBeanBuilder<ExpenseCsvDTO>(reader)
+              .withType(ExpenseCsvDTO.class)
+              .withIgnoreLeadingWhiteSpace(true)
+              .build();
 
-      while ((line = br.readLine()) != null) {
+      List<ExpenseCsvDTO> expenseCsvDTOList = csvDTOS.parse();
 
-        lineNumber++;
+      for (int i = 0; i < expenseCsvDTOList.size(); i++) {
 
-        if (lineNumber == 1) continue;
+        ExpenseCsvDTO expenseCsvDTO = expenseCsvDTOList.get(i);
 
-        String[] fields = line.split(",");
+        int lineNumber = i + 2;
 
-        if (fields.length < 5) {
-
-          throw new BadRequestException(
-              "Arquivo com quantidade incorreta de colunas! Verifique o arquivo e tente novamente.");
-        }
-
-        String description = fields[0].trim();
-        String strAmount = fields[1].trim();
-        String categoryName = fields[2].trim().toLowerCase();
-        String supplierName = fields[3].trim().toLowerCase();
-        String strDueDate = fields[4].trim();
-        String notes = fields.length > 5 ? fields[5].trim() : "";
-
-        if (description.isEmpty()
-            || strAmount.isEmpty()
-            || categoryName.isEmpty()
-            || supplierName.isEmpty()
-            || strDueDate.isEmpty()) {
-
-          throw new BadRequestException("Campos obrigatórios faltando na linha: " + lineNumber);
-        }
-
-        BigDecimal amount = new BigDecimal(strAmount);
-        LocalDate dueDate = LocalDate.parse(strDueDate, dateInputFormatter);
-
-        int finalLineNumber = lineNumber;
+        BigDecimal amount = new BigDecimal(expenseCsvDTO.getAmount());
+        LocalDate dueDate = expenseCsvDTO.getDueDate();
 
         FinancialCategory financialCategory =
             financialCategoryRepository
-                .findByName(userId, categoryName)
+                .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
                 .orElseThrow(
                     () ->
                         new ResourceNotFoundException(
                             String.format(
                                 "Categoria não encontrada na linha: %s. Categoria: %s",
-                                finalLineNumber, categoryName)));
+                                lineNumber, expenseCsvDTO.getCategoryName())));
 
         Supplier supplier =
             supplierRepository
-                .findByName(userId, supplierName)
+                .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
                 .orElseThrow(
                     () ->
                         new ResourceNotFoundException(
                             String.format(
                                 "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
-                                finalLineNumber, supplierName)));
+                                lineNumber, expenseCsvDTO.getSupplierName())));
 
         expenses.add(
             expenseFactory.buildExpense(
-                description,
+                expenseCsvDTO.getDescription(),
                 amount,
-                LocalDate.parse(dueDate.toString(), dbDateFormatter),
-                authHelper.getUserDetails(),
+                dueDate,
+                user,
                 financialCategory,
                 supplier,
-                notes));
+                expenseCsvDTO.getNotes()));
       }
 
-    } catch (Exception ex) {
-
-      ex.printStackTrace();
+    } catch (IOException ex) {
 
       logger.error("Ocorreu um erro interno ao processar o CSV de despesas");
+
+      logger.error(Arrays.toString(ex.getStackTrace()));
 
       throw new BadRequestException("Ocorreu um erro processando o csv.");
     }
