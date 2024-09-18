@@ -251,44 +251,41 @@ public class ExpenseServiceImpl implements ExpenseService {
                             sup.getName(), expenseCsvDTO.getSupplierName()))
                 .findFirst();
 
-        FinancialCategory financialCategory;
-        Supplier supplier;
+        FinancialCategory financialCategory =
+            categoryExists.orElseGet(
+                () -> {
+                  FinancialCategory fc =
+                      financialCategoryRepository
+                          .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
+                          .orElseThrow(
+                              () ->
+                                  new ResourceNotFoundException(
+                                      String.format(
+                                          "Categoria não encontrada na linha: %s. Categoria: %s",
+                                          lineNumber, expenseCsvDTO.getCategoryName())));
 
-        if (categoryExists.isEmpty()) {
+                  previousFetchedCategories.add(fc);
 
-          financialCategory =
-              financialCategoryRepository
-                  .findByName(userId, expenseCsvDTO.getCategoryName().toLowerCase())
-                  .orElseThrow(
-                      () ->
-                          new ResourceNotFoundException(
-                              String.format(
-                                  "Categoria não encontrada na linha: %s. Categoria: %s",
-                                  lineNumber, expenseCsvDTO.getCategoryName())));
+                  return fc;
+                });
 
-          previousFetchedCategories.add(financialCategory);
-        } else {
+        Supplier supplier =
+            supplierExists.orElseGet(
+                () -> {
+                  Supplier sup =
+                      supplierRepository
+                          .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
+                          .orElseThrow(
+                              () ->
+                                  new ResourceNotFoundException(
+                                      String.format(
+                                          "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
+                                          lineNumber, expenseCsvDTO.getSupplierName())));
 
-          financialCategory = categoryExists.get();
-        }
+                  previousFetchedSuppliers.add(sup);
 
-        if (supplierExists.isEmpty()) {
-
-          supplier =
-              supplierRepository
-                  .findByName(userId, expenseCsvDTO.getSupplierName().toLowerCase())
-                  .orElseThrow(
-                      () ->
-                          new ResourceNotFoundException(
-                              String.format(
-                                  "Fornecedor não encontrado na linha: %s. Fornecedor: %s",
-                                  lineNumber, expenseCsvDTO.getSupplierName())));
-
-          previousFetchedSuppliers.add(supplier);
-        } else {
-
-          supplier = supplierExists.get();
-        }
+                  return sup;
+                });
 
         expenses.add(
             expenseFactory.buildExpense(
