@@ -8,6 +8,7 @@ import com.finances.finances.domain.dto.expense.ExpenseResponseDTO;
 import com.finances.finances.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,5 +63,16 @@ public class ExpenseControllerImpl implements ExpenseController {
       @RequestParam("csvFile") MultipartFile csvFile) {
 
     return ResponseEntity.ok(expenseService.processCSV(csvFile));
+  }
+
+  @GetMapping(value = "/download-csv-example", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<byte[]> downloadCsvExample() {
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+
+    httpHeaders.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=exemplo.csv");
+    httpHeaders.set(HttpHeaders.CONTENT_TYPE, "text/csv");
+
+    return new ResponseEntity<>(expenseService.getExampleCsv(), httpHeaders, HttpStatus.OK);
   }
 }
