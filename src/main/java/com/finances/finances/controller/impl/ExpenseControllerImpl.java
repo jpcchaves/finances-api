@@ -9,8 +9,10 @@ import com.finances.finances.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/expenses")
@@ -52,5 +54,13 @@ public class ExpenseControllerImpl implements ExpenseController {
       @PathVariable(name = "expenseId") Long expenseId) {
 
     return ResponseEntity.ok(expenseService.findById(expenseId));
+  }
+
+  @PostMapping(value = "/upload-csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Override
+  public ResponseEntity<ResponseDTO<?>> uploadExpensesCsv(
+      @RequestParam("csvFile") MultipartFile csvFile) {
+
+    return ResponseEntity.ok(expenseService.processCSV(csvFile));
   }
 }
