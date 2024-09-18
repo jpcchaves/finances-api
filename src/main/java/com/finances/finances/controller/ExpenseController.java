@@ -80,6 +80,31 @@ public interface ExpenseController {
       })
   ResponseEntity<ResponseDTO<ExpenseResponseDTO>> findById(Long expenseId);
 
+  @Operation(
+      summary = "Upload a expense csv",
+      description = "Upload a expense csv and persist in the database the data in the csv",
+      responses = {
+        @ApiResponse(
+            description = "Success",
+            responseCode = "200",
+            content = @Content(schema = @Schema(implementation = ResponseDTO.class))),
+        @ApiResponse(description = "Bad Request", responseCode = "400", content = @Content),
+        @ApiResponse(description = "Unauthorized", responseCode = "401", content = @Content),
+        @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+      })
   ResponseEntity<ResponseDTO<?>> uploadExpensesCsv(
       @ModelAttribute("csvFile") MultipartFile csvFile);
+
+  @Operation(
+      summary = "Downloads a expense csv example file",
+      description =
+          "Downloads a expense csv example file that can be filled and uploaded to persist the expenses",
+      responses = {
+        @ApiResponse(
+            description = "Success",
+            responseCode = "200",
+            content = @Content(schema = @Schema(implementation = Void.class))),
+        @ApiResponse(description = "Internal Error", responseCode = "500", content = @Content),
+      })
+  ResponseEntity<byte[]> downloadCsvExample();
 }

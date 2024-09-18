@@ -293,6 +293,8 @@ public class ExpenseServiceImpl implements ExpenseService {
       return csvBytes;
 
     } catch (IOException e) {
+
+      logger.error("An error occurred processing the example csv from classpath resources");
       throw new RuntimeException(e);
     }
   }
