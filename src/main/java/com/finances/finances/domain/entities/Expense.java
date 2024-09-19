@@ -24,7 +24,7 @@ public class Expense implements Serializable {
   @Column(nullable = false)
   private String description;
 
-  @Column(nullable = false)
+  @Column(nullable = false, precision = 2, scale = 10)
   private BigDecimal amount = BigDecimal.ZERO;
 
   @Column(nullable = false)
