@@ -65,7 +65,7 @@ public class ExpenseControllerImpl implements ExpenseController {
     return ResponseEntity.ok(expenseService.processCSV(csvFile));
   }
 
-  @GetMapping(value = "/download-csv-example", produces = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @GetMapping(value = "/download-csv-example", produces = "text/csv")
   public ResponseEntity<byte[]> downloadCsvExample() {
 
     HttpHeaders httpHeaders = new HttpHeaders();
