@@ -40,14 +40,20 @@ public class Expense implements Serializable {
       foreignKey = @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT))
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(
+      fetch = FetchType.LAZY,
+      optional = false,
+      cascade = {CascadeType.DETACH})
   @JoinColumn(
       name = "financial_category_id",
       nullable = false,
       foreignKey = @ForeignKey(name = "financial_category_fk", value = ConstraintMode.CONSTRAINT))
   private FinancialCategory category;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(
+      fetch = FetchType.LAZY,
+      optional = false,
+      cascade = {CascadeType.DETACH})
   @JoinColumn(
       name = "supplier_id",
       nullable = false,
