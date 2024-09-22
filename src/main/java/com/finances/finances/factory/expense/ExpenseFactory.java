@@ -19,5 +19,15 @@ public interface ExpenseFactory {
       Supplier supplier,
       String notes);
 
+  Expense buildExpense(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      String notes,
+      Integer referenceMonth);
+
   ExpenseResponseDTO buildExpenseResponseDTO(Expense expense);
 }

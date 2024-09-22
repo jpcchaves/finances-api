@@ -26,6 +26,21 @@ public class ConcreteExpenseFactory implements ExpenseFactory {
   }
 
   @Override
+  public Expense buildExpense(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      String notes,
+      Integer referenceMonth) {
+
+    return new Expense(
+        description, amount, dueDate, user, category, supplier, notes, referenceMonth);
+  }
+
+  @Override
   public ExpenseResponseDTO buildExpenseResponseDTO(Expense expense) {
 
     return new ExpenseResponseDTO(
