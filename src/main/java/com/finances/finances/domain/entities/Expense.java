@@ -61,6 +61,9 @@ public class Expense implements Serializable {
   private Supplier supplier;
 
   @Column(nullable = false)
+  private Integer referenceMonth;
+
+  @Column(nullable = false)
   @CreationTimestamp
   @Temporal(TemporalType.TIMESTAMP)
   private Date createdAt;
@@ -115,6 +118,25 @@ public class Expense implements Serializable {
     this.category = category;
     this.supplier = supplier;
     this.notes = notes;
+  }
+
+  public Expense(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      String notes,
+      Integer referenceMonth) {
+    this.description = description;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.user = user;
+    this.category = category;
+    this.supplier = supplier;
+    this.notes = notes;
+    this.referenceMonth = referenceMonth;
   }
 
   public Long getId() {
@@ -179,6 +201,14 @@ public class Expense implements Serializable {
 
   public void setSupplier(Supplier supplier) {
     this.supplier = supplier;
+  }
+
+  public Integer getReferenceMonth() {
+    return referenceMonth;
+  }
+
+  public void setReferenceMonth(Integer referenceMonth) {
+    this.referenceMonth = referenceMonth;
   }
 
   public Date getCreatedAt() {
