@@ -5,12 +5,19 @@ import com.finances.finances.domain.entities.Expense;
 import com.finances.finances.domain.entities.FinancialCategory;
 import com.finances.finances.domain.entities.Supplier;
 import com.finances.finances.domain.entities.User;
+import com.finances.finances.util.mapper.ReferenceMonthMapper;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ConcreteExpenseFactory implements ExpenseFactory {
+
+  private final ReferenceMonthMapper referenceMonthMapper;
+
+  public ConcreteExpenseFactory(ReferenceMonthMapper referenceMonthMapper) {
+    this.referenceMonthMapper = referenceMonthMapper;
+  }
 
   @Override
   public Expense buildExpense(
@@ -50,6 +57,7 @@ public class ConcreteExpenseFactory implements ExpenseFactory {
         expense.getDescription(),
         expense.getNotes(),
         expense.getCategory().getName(),
-        expense.getSupplier().getName());
+        expense.getSupplier().getName(),
+        referenceMonthMapper.getReferenceMonthByIndex(expense.getReferenceMonth()));
   }
 }

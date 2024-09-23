@@ -23,6 +23,7 @@ public class ExpenseResponseDTO implements Serializable {
   private String notes;
   private String category;
   private String supplier;
+  private String referenceMonth;
 
   public ExpenseResponseDTO() {}
 
@@ -56,6 +57,25 @@ public class ExpenseResponseDTO implements Serializable {
     this.notes = notes;
     this.category = category;
     this.supplier = supplier;
+  }
+
+  public ExpenseResponseDTO(
+      Long id,
+      BigDecimal amount,
+      LocalDate dueDate,
+      String description,
+      String notes,
+      String category,
+      String supplier,
+      String referenceMonth) {
+    this.id = id;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.description = description;
+    this.notes = notes;
+    this.category = category;
+    this.supplier = supplier;
+    this.referenceMonth = referenceMonth;
   }
 
   public Long getId() {
@@ -112,5 +132,13 @@ public class ExpenseResponseDTO implements Serializable {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getReferenceMonth() {
+    return referenceMonth;
+  }
+
+  public void setReferenceMonth(String referenceMonth) {
+    this.referenceMonth = referenceMonth;
   }
 }
