@@ -157,10 +157,14 @@ public class ExpenseServiceImpl implements ExpenseService {
       expense.setSupplier(supplier);
     }
 
+    Integer referenceMonth =
+        monthConverterFactory.getPtBrToEnConverter().convertToIndex(requestDTO.getReferenceMonth());
+
     expense.setDescription(requestDTO.getDescription());
     expense.setAmount(requestDTO.getAmount());
     expense.setDueDate(requestDTO.getDueDate());
     expense.setNotes(requestDTO.getNotes());
+    expense.setReferenceMonth(referenceMonth);
 
     expense = expenseRepository.save(expense);
 
