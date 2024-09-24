@@ -31,6 +31,9 @@ public class ExpenseRequestDTO implements Serializable {
   @NotBlank(message = "O fornecedor é obrigatório!")
   private String supplier;
 
+  @NotBlank(message = "O mês de competência é obrigatorio!")
+  private String referenceMonth;
+
   public ExpenseRequestDTO() {}
 
   public ExpenseRequestDTO(
@@ -48,6 +51,23 @@ public class ExpenseRequestDTO implements Serializable {
     this.supplier = supplier;
   }
 
+  public ExpenseRequestDTO(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      String notes,
+      String category,
+      String supplier,
+      String referenceMonth) {
+    this.description = description;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.notes = notes;
+    this.category = category;
+    this.supplier = supplier;
+    this.referenceMonth = referenceMonth;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -56,19 +76,19 @@ public class ExpenseRequestDTO implements Serializable {
     this.description = description;
   }
 
-  public java.math.BigDecimal getAmount() {
+  public BigDecimal getAmount() {
     return amount;
   }
 
-  public void setAmount(java.math.BigDecimal amount) {
+  public void setAmount(BigDecimal amount) {
     this.amount = amount;
   }
 
-  public java.time.LocalDate getDueDate() {
+  public LocalDate getDueDate() {
     return dueDate;
   }
 
-  public void setDueDate(java.time.LocalDate dueDate) {
+  public void setDueDate(LocalDate dueDate) {
     this.dueDate = dueDate;
   }
 
@@ -94,5 +114,14 @@ public class ExpenseRequestDTO implements Serializable {
 
   public void setSupplier(String supplier) {
     this.supplier = supplier;
+  }
+
+  public @NotBlank(message = "O mês de competência é obrigatorio!") String getReferenceMonth() {
+    return referenceMonth;
+  }
+
+  public void setReferenceMonth(
+      @NotBlank(message = "O mês de competência é obrigatorio!") String referenceMonth) {
+    this.referenceMonth = referenceMonth;
   }
 }

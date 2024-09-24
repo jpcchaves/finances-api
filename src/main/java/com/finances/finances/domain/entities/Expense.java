@@ -40,19 +40,28 @@ public class Expense implements Serializable {
       foreignKey = @ForeignKey(name = "user_fk", value = ConstraintMode.CONSTRAINT))
   private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(
+      fetch = FetchType.LAZY,
+      optional = false,
+      cascade = {CascadeType.DETACH})
   @JoinColumn(
       name = "financial_category_id",
       nullable = false,
       foreignKey = @ForeignKey(name = "financial_category_fk", value = ConstraintMode.CONSTRAINT))
   private FinancialCategory category;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @ManyToOne(
+      fetch = FetchType.LAZY,
+      optional = false,
+      cascade = {CascadeType.DETACH})
   @JoinColumn(
       name = "supplier_id",
       nullable = false,
       foreignKey = @ForeignKey(name = "supplier_fk", value = ConstraintMode.CONSTRAINT))
   private Supplier supplier;
+
+  @Column(nullable = false)
+  private Integer referenceMonth;
 
   @Column(nullable = false)
   @CreationTimestamp
@@ -109,6 +118,25 @@ public class Expense implements Serializable {
     this.category = category;
     this.supplier = supplier;
     this.notes = notes;
+  }
+
+  public Expense(
+      String description,
+      BigDecimal amount,
+      LocalDate dueDate,
+      User user,
+      FinancialCategory category,
+      Supplier supplier,
+      String notes,
+      Integer referenceMonth) {
+    this.description = description;
+    this.amount = amount;
+    this.dueDate = dueDate;
+    this.user = user;
+    this.category = category;
+    this.supplier = supplier;
+    this.notes = notes;
+    this.referenceMonth = referenceMonth;
   }
 
   public Long getId() {
@@ -173,6 +201,14 @@ public class Expense implements Serializable {
 
   public void setSupplier(Supplier supplier) {
     this.supplier = supplier;
+  }
+
+  public Integer getReferenceMonth() {
+    return referenceMonth;
+  }
+
+  public void setReferenceMonth(Integer referenceMonth) {
+    this.referenceMonth = referenceMonth;
   }
 
   public Date getCreatedAt() {

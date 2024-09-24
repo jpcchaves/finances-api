@@ -12,6 +12,7 @@ import com.finances.finances.domain.entities.User;
 import com.finances.finances.exception.BadRequestException;
 import com.finances.finances.exception.ResourceNotFoundException;
 import com.finances.finances.factory.expense.ExpenseFactory;
+import com.finances.finances.factory.monthconverter.MonthConverterFactory;
 import com.finances.finances.helper.auth.AuthHelper;
 import com.finances.finances.mapper.expense.ExpenseMapper;
 import com.finances.finances.persistence.repository.ExpenseRepository;
@@ -50,6 +51,7 @@ public class ExpenseServiceImpl implements ExpenseService {
   private final ExpenseFactory expenseFactory;
   private final ExpenseMapper expenseMapper;
   private final StringUtilsHelper stringUtilsHelper;
+  private final MonthConverterFactory monthConverterFactory;
 
   public ExpenseServiceImpl(
       ExpenseRepository expenseRepository,
@@ -58,7 +60,8 @@ public class ExpenseServiceImpl implements ExpenseService {
       AuthHelper authHelper,
       ExpenseFactory expenseFactory,
       ExpenseMapper expenseMapper,
-      StringUtilsHelper stringUtilsHelper) {
+      StringUtilsHelper stringUtilsHelper,
+      MonthConverterFactory monthConverterFactory) {
     this.expenseRepository = expenseRepository;
     this.financialCategoryRepository = financialCategoryRepository;
     this.supplierRepository = supplierRepository;
@@ -66,6 +69,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     this.expenseFactory = expenseFactory;
     this.expenseMapper = expenseMapper;
     this.stringUtilsHelper = stringUtilsHelper;
+    this.monthConverterFactory = monthConverterFactory;
   }
 
   @Override
@@ -92,6 +96,9 @@ public class ExpenseServiceImpl implements ExpenseService {
                             "Fornecedor não encontrado com o nome informado %s",
                             requestDTO.getSupplier())));
 
+    Integer referenceMonth =
+        monthConverterFactory.getPtBrToEnConverter().convertToIndex(requestDTO.getReferenceMonth());
+
     Expense expense =
         expenseFactory.buildExpense(
             requestDTO.getDescription(),
@@ -100,7 +107,8 @@ public class ExpenseServiceImpl implements ExpenseService {
             authHelper.getUserDetails(),
             financialCategory,
             supplier,
-            requestDTO.getNotes());
+            requestDTO.getNotes(),
+            referenceMonth);
 
     expense = expenseRepository.save(expense);
 
@@ -149,10 +157,14 @@ public class ExpenseServiceImpl implements ExpenseService {
       expense.setSupplier(supplier);
     }
 
+    Integer referenceMonth =
+        monthConverterFactory.getPtBrToEnConverter().convertToIndex(requestDTO.getReferenceMonth());
+
     expense.setDescription(requestDTO.getDescription());
     expense.setAmount(requestDTO.getAmount());
     expense.setDueDate(requestDTO.getDueDate());
     expense.setNotes(requestDTO.getNotes());
+    expense.setReferenceMonth(referenceMonth);
 
     expense = expenseRepository.save(expense);
 
