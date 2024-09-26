@@ -84,15 +84,18 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
 
     for (int i = 0; i < 300; i++) {
 
+      LocalDate dueDate = LocalDate.now().plusMonths(faker.number().numberBetween(0, 11));
+
       expensesList.add(
           new Expense(
               faker.lorem().characters(20),
               BigDecimal.valueOf(faker.number().randomDouble(2, 20, 500)),
-              LocalDate.now().plusMonths(1),
+              dueDate,
               user,
               financialCategoriesList.get(faker.random().nextInt(0, 2)),
               supplierList.get(faker.random().nextInt(0, 2)),
-              faker.lorem().characters(20)));
+              faker.lorem().characters(20),
+              dueDate.getMonthValue()));
     }
 
     expenseRepository.saveAll(expensesList);
