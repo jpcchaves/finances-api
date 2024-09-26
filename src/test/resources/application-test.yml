@@ -7,7 +7,7 @@ spring:
     rollback-on-commit-failure: true
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       show_sql: false
       dialect: org.hibernate.dialect.PostgreSQLDialect
