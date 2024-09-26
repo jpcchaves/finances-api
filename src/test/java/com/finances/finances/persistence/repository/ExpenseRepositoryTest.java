@@ -293,4 +293,14 @@ class ExpenseRepositoryTest extends AbstractTestContainerConfig {
     assertNotNull(expenseGroupedBySupplierDTO.getSupplier());
     assertNotNull(expenseGroupedBySupplierDTO.getAmount());
   }
+
+  @DisplayName(
+      "Test given userId when find total amount in each month then return expenses grouped by month in the current year")
+  @Test
+  void findTotalAmountInEachMonth() {
+
+    List<Object[]> report = expenseRepository.findTotalAmountInEachMonth(user.getId());
+
+    assertNotNull(report);
+  }
 }
