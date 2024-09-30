@@ -1,6 +1,7 @@
 package com.finances.finances.service.impl;
 
 import com.finances.finances.domain.dto.common.ExpenseGroupedByCategoryDTO;
+import com.finances.finances.domain.dto.common.ExpenseGroupedByMonthDTO;
 import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
 import com.finances.finances.domain.entities.FinancialCategory;
@@ -23,6 +24,7 @@ public class ExpenseReportServiceImpl implements ExpenseReportService {
   private final FinancialCategoryRepository financialCategoryRepository;
   private final SupplierRepository supplierRepository;
   private final AuthHelper authHelper;
+  private Long userId;
 
   public ExpenseReportServiceImpl(
       ExpenseRepository expenseRepository,
@@ -33,6 +35,7 @@ public class ExpenseReportServiceImpl implements ExpenseReportService {
     this.financialCategoryRepository = financialCategoryRepository;
     this.supplierRepository = supplierRepository;
     this.authHelper = authHelper;
+    this.userId = authHelper.getUserDetails().getId();
   }
 
   @Override
@@ -119,5 +122,20 @@ public class ExpenseReportServiceImpl implements ExpenseReportService {
         new ExpenseGroupedBySupplierDTO(supplier.getName(), totalAmount);
 
     return ResponseDTO.withData(expenseGroupedBySupplierDTO);
+  }
+
+  @Override
+  public ResponseDTO<List<ExpenseGroupedByMonthDTO>> getExpensesGroupedByMonth() {
+
+    List<Object[]> result = expenseRepository.findTotalAmountInEachMonth(userId);
+
+    List<ExpenseGroupedByMonthDTO> expenseGroupedByMonthDTOS =
+        result.stream()
+            .map(
+                exGrouped ->
+                    new ExpenseGroupedByMonthDTO((String) exGrouped[0], (BigDecimal) exGrouped[1]))
+            .toList();
+
+    return ResponseDTO.withData(expenseGroupedByMonthDTOS);
   }
 }
