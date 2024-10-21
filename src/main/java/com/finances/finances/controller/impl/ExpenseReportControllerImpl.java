@@ -2,6 +2,7 @@ package com.finances.finances.controller.impl;
 
 import com.finances.finances.controller.ExpenseReportController;
 import com.finances.finances.domain.dto.common.ExpenseGroupedByCategoryDTO;
+import com.finances.finances.domain.dto.common.ExpenseGroupedByMonthDTO;
 import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
 import com.finances.finances.service.ExpenseReportService;
@@ -62,5 +63,11 @@ public class ExpenseReportControllerImpl implements ExpenseReportController {
 
     return ResponseEntity.ok(
         expenseReportService.getExpensesGroupedBySupplier(supplierName, startDate, endDate));
+  }
+
+  @Override
+  public ResponseEntity<ResponseDTO<List<ExpenseGroupedByMonthDTO>>> getExpensesGrouepdByMonth() {
+
+    return ResponseEntity.ok(expenseReportService.getExpensesGroupedByMonth());
   }
 }

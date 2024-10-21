@@ -1,6 +1,7 @@
 package com.finances.finances.service;
 
 import com.finances.finances.domain.dto.common.ExpenseGroupedByCategoryDTO;
+import com.finances.finances.domain.dto.common.ExpenseGroupedByMonthDTO;
 import com.finances.finances.domain.dto.common.ExpenseGroupedBySupplierDTO;
 import com.finances.finances.domain.dto.common.ResponseDTO;
 import java.time.LocalDate;
@@ -19,4 +20,6 @@ public interface ExpenseReportService {
 
   ResponseDTO<ExpenseGroupedBySupplierDTO> getExpensesGroupedBySupplier(
       String supplierName, LocalDate startDate, LocalDate endDate);
+
+  ResponseDTO<List<ExpenseGroupedByMonthDTO>> getExpensesGroupedByMonth();
 }
